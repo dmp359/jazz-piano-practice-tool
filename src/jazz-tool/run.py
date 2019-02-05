@@ -1,5 +1,5 @@
 # Dan Perlman, dmp359@drexel.edu
-# CS530: DUI, Assignment 1
+# CS530: DUI, Project
 
 from flask import Flask, render_template, send_file
 import os, json
@@ -17,10 +17,10 @@ def index():
     return render_template('index.html')
 
 
-# Handle any files that begin "/course" by loading from the course directory
-@app.route('/course/<path:path>')
+# Handle any files that begin "/resources" by loading from the resources directory
+@app.route('/resources/<path:path>')
 def base_static(path):
-    return send_file(os.path.join(app.root_path, '..', 'course', path))
+    return send_file(os.path.join(app.root_path, '..', 'resources', path))
 
 @app.route('/bikes')
 def bikes():
