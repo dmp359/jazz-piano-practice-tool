@@ -8,26 +8,30 @@ body {
 }
 
 header {
-    background: #006298;
+    background: #5258e3;
 }
 
-.btn {
+/* .btn {
     background: #333333;
     border-color: #333333;
     color: #fff;
-}
+} */
 
 
-.btn:hover {
-    background: #006298;
-    border-color: #FFC600;
+/* .btn:hover {
+    background: #5258e3;
+    border-color: #000000;
     color: #fff;
-}
+} */
 
 .navbar-expand-md .navbar-nav .nav-link {
     padding-left: 1rem;
     padding-right: 1rem;
-    color: #FFC600
+    color: #eff6fe
+}
+
+.navbar-dark .navbar-nav .active>.nav-link {
+    color: #f7ff83;
 }
 
 .content {

@@ -7,9 +7,9 @@ import os, json
 
 app = Flask(__name__, static_folder='public', static_url_path='')
 
-# Read bike data from data.txt
-with open('data.txt') as json_file:  
-    bike_data = json.load(json_file)
+# # Read bike data from data.txt
+# with open('data.txt') as json_file:  
+#     bike_data = json.load(json_file)
 
 # Handle the index (home) page
 @app.route('/')
