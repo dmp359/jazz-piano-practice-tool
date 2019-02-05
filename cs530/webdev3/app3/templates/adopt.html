@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% set active = "Adopt" %}
+
+{% block title %}
+Adopt a Goat
+{% endblock %}
+
+{% block content %}
+
+<h1>Adopt a Goat</h1>
+
+<p>
+    Please see our awesome goats below and adopt one today!
+</p>
+
+<div id="cards" class="container">
+
+</div>
+
+<nav>
+    <ul id="paginator" class="pagination justify-content-center">
+    </ul>
+</nav>
+
+<script>
+
+    const goatsPerColumn = 3;
+    const goatsPerPage = 3;
+
+    var currentPage = 1;
+
+    function buildCards(goats) {
+        $('#cards').empty();
+        for (var i = 0; i < goats.length; i++) {
+            let goat = goats[i];
+            let card = $('<div>').addClass('card')
+                .append(
+                    $('<img>').addClass('card-img-top').attr('src', '/course/img/goats/' + goat.image)
+                ).append(
+                    $('<p>').addClass('card-body')
+                        .append(
+                            $('<h5>').addClass('card-title').text(goat.name)
+                        ).append(
+                            $('<p>').addClass('card-text').text(goat.age + ' years old')
+                        ).append(
+                            $('<a>').addClass('btn btn-primary').text('Adopt')
+                                .click(function () {
+                                    goat.adopted = goat.adopted ? 0 : 1;
+                                    adoptGoat(goat.uid, goat.adopted);
+                                })
+                        )
+                );
+            if (goat.adopted)
+                card.addClass('adopted');
+            if (i % goatsPerColumn == 0)
+                $('#cards').append(
+                    $('<div>').addClass('card-deck')
+                );
+            $('#cards .card-deck').last().append(card);
+        }
+        while ($('#cards .card-deck:last .card').length < goatsPerColumn)
+            $('#cards .card-deck').last().append($('<div>').addClass('card'));
+    }
+
+    function createPageLink(text, toPage, active, disabled) {
+        let link = $('<li>').addClass('page-item').append(
+            $('<a>').addClass('page-link').text(text).click(function () {
+                currentPage = toPage;
+                loadGoats();
+            })
+        );
+        if (active)
+            link.addClass('active');
+        if (disabled)
+            link.addClass('disabled');
+        return link;
+    }
+
+    function updatePagination(total) {
+        let pages = Math.ceil(total / goatsPerPage);
+        $('#paginator').empty().append(
+            createPageLink('Previous', currentPage - 1, false, currentPage == 1)
+        );
+        for (var page = 1; page <= pages; page++)
+            $('#paginator').append(
+                createPageLink(page, page, page == currentPage, false)
+            );
+        $('#paginator').append(
+            createPageLink('Next', currentPage + 1, false, currentPage == pages)
+        );
+    }
+
+    function updatePage(data) {
+        buildCards(data.goats);
+        updatePagination(data.total);
+    }
+
+    function loadGoats() {
+        $.get("api/goats", {
+            n: goatsPerPage,
+            offset: (currentPage - 1) * goatsPerPage
+        }, function (data) {
+            updatePage(data);
+        });
+    }
+
+    function adoptGoat(uid, value) {
+        $.get("api/adopt", {
+            uid: uid,
+            value: value,
+            n: goatsPerPage,
+            offset: (currentPage - 1) * goatsPerPage
+        }, function (data) {
+            updatePage(data);
+        });
+    }
+
+    $(function () {
+        loadGoats();
+    });
+
+</script>
+
+{% endblock %}

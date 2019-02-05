@@ -1,0 +1,12 @@
+
+sqlite3 goats.db
+
+CREATE TABLE goats (
+ uid INTEGER PRIMARY KEY,
+ name TEXT NOT NULL,
+ age INTEGER,
+ img TEXT
+);
+
+.mode csv
+.import dev/data.csv goats

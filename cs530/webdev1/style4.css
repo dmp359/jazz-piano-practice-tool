@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    font-family: "Avenir";
+}
+
+.menu-bar {
+    padding: 1rem;
+    background: #406C39;
+}
+
+.menu-item {
+    margin-left: 1rem;
+    color: #fff;
+    text-decoration: none;
+}
+
+.splash {
+    text-align: center;
+}
+
+.splash a {
+    margin: .5rem;
+    padding: .5rem 1rem;
+
+    background: #475;
+    border: 1px solid #253;
+    border-radius: .5rem;
+
+    color: #fff;
+    text-decoration: none;
+}
+
+.splash a:hover {
+    background: #697;
+}

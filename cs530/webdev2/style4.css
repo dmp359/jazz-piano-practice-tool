@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    font-family: "Avenir";
+}
+
+.menu-bar {
+    padding: 1rem;
+    background: #406C39;
+}
+
+.menu-item {
+    margin-left: 1rem;
+    color: #ddd;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.menu {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    z-index: 1;
+}
+
+.menu-dropdown div {
+    margin: .5rem 0;
+}
+
+.menu-dropdown a, .menu-dropdown a:hover {
+    color: #204c19;
+}
+
+.jumbotron {
+    background: white;
+}
+
+.lead {
+    color: #00f;
+    /* does nothing! */
+}
