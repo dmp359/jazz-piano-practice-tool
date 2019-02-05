@@ -1,0 +1,52 @@
+<!-- Dan Perlman, dmp359@drexel.edu
+CS530: DUI, Assignment 1 -->
+
+{% extends 'base.html' %}
+{% set active = "About" %}
+
+{% block title %}
+About
+{% endblock %}
+
+{% block content %}
+
+<section>
+    <div>
+        <h1 class="jumbotron-heading">Our Bikes</h1>
+        <p>We have the best selection of bikes around. Please see our selection below!</p>
+        
+        <!-- Using Flask data to generate table -->
+        <table class="table">
+            <th>Image</th>
+            <th>Name</th>
+            <th>Wheels</th>
+            <th>Size</th>
+            <th>Motorized</th>
+            <th>Folding</th>
+            {% for bike in data %}
+                <tr>
+                    <td>
+                        <img src="{{ base_bikes_url }}{{ bike.image }}">
+                    </td>
+                    <td>
+                        {{bike.name}}
+                    </td>
+                    <td>
+                        {{bike.wheels}}
+                    </td>
+                    <td>
+                        {{bike.size}}
+                    </td>
+                    <td>
+                        {{bike.motor}}
+                    </td> 
+                    <td>
+                        {{bike.folding}}
+                    </td>                        
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+
+{% endblock %}
