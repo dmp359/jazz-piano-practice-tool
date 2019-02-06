@@ -18,7 +18,6 @@ CS530: DUI, Project -->
     <script src="/resources/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="/resources/lib/tone-js/Tone.js"></script>
     <script src="/resources/lib/tone-js/tonejs-ui.js"></script>
-    <script src="/js/sound.js"></script>
 
 </head>
 
@@ -56,11 +55,20 @@ CS530: DUI, Project -->
 
     <main>
         <div class="container content">
-                <tone-play-toggle></tone-play-toggle>
-                <tone-slider label="bpm" min="60" max="240" exp="2" value="120"></tone-slider>
+            <div class="col-md-4 text-center"> 
+                    
+                    <div><img src="/img/metronome.svg" style="max-height: 40px;">
+                    </div>
+                    <div class="float-right">
+                            <tone-slider label="bpm" min="60" max="500" exp="2" value="120"></tone-slider>
+                            <tone-play-toggle style="width: 10%"></tone-play-toggle>
+                    </div>
+            </div>
+            
             {% block content %}{% endblock %}
         </div>
     </main>
+    <script src="/js/metronome.js"></script>
 
 </body>
 

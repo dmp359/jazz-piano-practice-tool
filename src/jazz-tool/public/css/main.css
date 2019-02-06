@@ -47,12 +47,12 @@ header {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-/* for bikes.html */
+/* for bikes.html
 td img {
     max-width: 100px;
 }
 
-/* for rent.html */
+for rent.html
 .unavailable {
     opacity: 0.25;
-}
+} */
