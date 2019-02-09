@@ -6,6 +6,8 @@ import os, json
 
 
 app = Flask(__name__, static_folder='public', static_url_path='')
+app.config["CACHE_TYPE"] = "null"
+# change to "redis" and restart to cache again
 
 # # Read bike data from data.txt
 # with open('data.txt') as json_file:  
@@ -34,6 +36,10 @@ def generic(name):
 
 # Any additional handlers that go beyond simply loading a template
 # (e.g., a handler that needs to pass data to a template) can be added here
+@app.after_request
+def add_header(response):
+    response.cache_control.no_store = True
+    return response
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)
