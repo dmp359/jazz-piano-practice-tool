@@ -35,7 +35,8 @@ lick.forEach((measure, i) => {
   // Instantiate stave (measure)
   var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
 
-  if (i == 0) { // Draw clef and time signature on first measure
+   // Draw clef and time signature on first measure
+  if (i == 0) {
     staveMeasure.addClef("treble").addTimeSignature("4/4");
   }
 
