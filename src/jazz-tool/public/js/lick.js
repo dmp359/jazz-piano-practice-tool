@@ -9,15 +9,20 @@ var vf = new Vex.Flow.Factory({
 
 var ctx = vf.context;
 
+// Formation annotation for chord symbol
+function newAnnotation(text) {
+  return new VF.Annotation(text).setFont('Times', 14, 'bold');
+}
+
 const lick = [
   [  // TODO add chord symbol
-    { keys: ["c/4"], duration: "q" },
+    { keys: ["c/4"], duration: "q", chord: "Dmin7" },
     { keys: ["d/4"], duration: "q" },
     { keys: ["b/4"], duration: "qr" },
     { keys: ["b/4"], duration: "q" },
   ],
   [
-    { keys: ["c/4"], duration: "8" },
+    { keys: ["c/4"], duration: "8", chord: "G7", },
     { keys: ["d/4"], duration: "8" },
     { keys: ["b/4"], duration: "8" },
     { keys: ["c/4", "e/4", "g/4"], duration: "8" },
@@ -45,7 +50,13 @@ lick.forEach((measure, i) => {
   staveMeasure.setContext(ctx).draw();
 
   // Create notes from array
-  var notesForMeasure = measure.map(note => new Vex.Flow.StaveNote(note));
+  var notesForMeasure = measure.map(note => {
+    // If a chord symbol is requested, add it
+    if (note.chord) {
+      return new Vex.Flow.StaveNote(note).addAnnotation(0, newAnnotation(note.chord));
+    }
+    return new Vex.Flow.StaveNote(note);
+  });
 
   // Automatic beaming
   var beams = VF.Beam.generateBeams(notesForMeasure);
