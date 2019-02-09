@@ -1,12 +1,6 @@
 // https://groups.google.com/forum/#!topic/vexflow/gQ7Zw97Zl6k
 VF = Vex.Flow;
 
-// // Automatic beaming
-// var beams = VF.Beam.generateBeams(notes);
-// voice.draw(context, stave);
-// beams.forEach(function(beam) {
-//   beam.setContext(context).draw();
-// });
 const width = 1000;
 const height = 250;
 var vf = new Vex.Flow.Factory({
@@ -15,44 +9,56 @@ var vf = new Vex.Flow.Factory({
 
 var ctx = vf.context;
 
-// measure 1
-var length = 300;
-var staveMeasure1 = new Vex.Flow.Stave(10, 0, length);
-staveMeasure1.addClef("treble").addTimeSignature("4/4").setContext(ctx).draw();
+const lick = [
+  [  // TODO add chord symbol
+    { keys: ["c/4"], duration: "q" },
+    { keys: ["d/4"], duration: "q" },
+    { keys: ["b/4"], duration: "qr" },
+    { keys: ["b/4"], duration: "q" },
+  ],
+  [
+    { keys: ["c/4"], duration: "8" },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" },
+    { keys: ["c/4", "e/4", "g/4"], duration: "8" },
+    { keys: ["c/4"], duration: "8" },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" },
+    { keys: ["c/4", "e/4", "g/4"], duration: "8" }
+  ],
+]
+const length = 300;
+let offsetX = 0;
 
-var notesMeasure1 = [
-  new Vex.Flow.StaveNote({ keys: ["c/4"], duration: "q" }),
-  new Vex.Flow.StaveNote({ keys: ["d/4"], duration: "q" }),
-  new Vex.Flow.StaveNote({ keys: ["b/4"], duration: "qr" }),
-  new Vex.Flow.StaveNote({ keys: ["c/4", "e/4", "g/4"], duration: "q" })
-];
+lick.forEach((measure, i) => {
 
-// Helper function to justify and draw a 4/4 voice
-Vex.Flow.Formatter.FormatAndDraw(ctx, staveMeasure1, notesMeasure1);
+  // Instantiate stave (measure)
+  var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
 
-// measure 2 - juxtaposing second measure next to first measure
-var staveMeasure2 = new Vex.Flow.Stave(staveMeasure1.width + staveMeasure1.x, 0, length);
-staveMeasure2.setContext(ctx).draw();
+  if (i == 0) { // Draw clef and time signature on first measure
+    staveMeasure.addClef("treble").addTimeSignature("4/4");
+  }
 
-var notesMeasure2 = [
-  new Vex.Flow.StaveNote({ keys: ["c/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["d/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["b/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["c/4", "e/4", "g/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["c/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["d/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["b/4"], duration: "8" }),
-  new Vex.Flow.StaveNote({ keys: ["c/4", "e/4", "g/4"], duration: "8" })
-];
+  // Draw staff lines
+  staveMeasure.setContext(ctx).draw();
 
-// Automatic beaming
-var beams = VF.Beam.generateBeams(notesMeasure2);
-var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
-voice.addTickables(notesMeasure2);
-var formatter = new Vex.Flow.Formatter();
-formatter.joinVoices([voice]).formatToStave([voice], staveMeasure2);
-voice.draw(ctx, staveMeasure2);
-beams.forEach(function(beam) {
-  beam.setContext(ctx).draw();
-});
-Vex.Flow.Formatter.FormatAndDraw(ctx, staveMeasure2, notesMeasure2);
+  // Create notes from array
+  var notesForMeasure = measure.map(note => new Vex.Flow.StaveNote(note));
+
+  // Automatic beaming
+  var beams = VF.Beam.generateBeams(notesForMeasure);
+  var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
+  voice.addTickables(notesForMeasure);
+  var formatter = new Vex.Flow.Formatter();
+  formatter.joinVoices([voice]).formatToStave([voice], staveMeasure);
+  voice.draw(ctx, staveMeasure);
+  beams.forEach(function(beam) {
+    beam.setContext(ctx).draw();
+  });
+
+  // Helper function to justify and draw a 4/4 voice
+  Vex.Flow.Formatter.FormatAndDraw(ctx, staveMeasure, notesForMeasure);
+  
+  // Juxtapose next measure next to previous measure
+  offsetX += staveMeasure.width;
+})
