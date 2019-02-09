@@ -30,6 +30,7 @@ const lick = [
 const length = 300;
 let offsetX = 0;
 
+// Draw the music given a lick array of measure data
 lick.forEach((measure, i) => {
 
   // Instantiate stave (measure)
@@ -62,4 +63,4 @@ lick.forEach((measure, i) => {
   
   // Juxtapose next measure next to previous measure
   offsetX += staveMeasure.width;
-})
+});
