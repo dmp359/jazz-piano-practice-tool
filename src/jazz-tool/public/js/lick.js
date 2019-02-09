@@ -14,8 +14,9 @@ function newAnnotation(text) {
   return new VF.Annotation(text).setFont('Times', 14, 'bold');
 }
 
+// TODO: Transpose function
 const lick = [
-  [  // TODO add chord symbol
+  [
     { keys: ["c/4"], duration: "q", chord: "Dmin7" },
     { keys: ["d/4"], duration: "q" },
     { keys: ["b/4"], duration: "qr" },
