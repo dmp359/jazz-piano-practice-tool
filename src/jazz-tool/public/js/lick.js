@@ -13,17 +13,78 @@ var ctx = vf.context;
 function newAnnotation(text) {
   return new VF.Annotation(text).setFont('Times', 14, 'bold');
 }
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
 
-// TODO: Transpose function
+const NOTE_TO_VALUES = {
+  'C': 0,
+  'C#': 1,
+  'Db': 1,
+  'D': 2,
+  'D#': 3,
+  'Eb': 3,
+  'E': 4,
+  'F': 5,
+  'F#': 6,
+  'Gb': 6,
+  'G' : 7,
+  'G#': 8,
+  'Ab': 8,
+  'A': 9,
+  'A#': 10,
+  'Bb': 10,
+  'B': 11,
+  'Cb': 11,
+};
+ 
+/*
+* @param note {string}
+* @param amount {number}
+* Transpose a note, i.e. C, by a certain amount, i.e. 2 shoud return D
+* TODO: Needs to consider key center
+*/
+function transposeNoteByAmount(note, amount) {
+  const currentValue = NOTE_TO_VALUES[note];
+  const newValue = currentValue + amount % 11;
+  return getKeyByValue(NOTE_TO_VALUES, newValue);
+}
+
+/*
+  @param lick [Array[Arrays]]
+*/
+function transposeLick(lick, amount) {
+  // Loop over all measures
+  // Move each note to new key
+  // Return new lick
+  lick.forEach(bar => {
+    bar.map(note => {
+      if (!note.duration.contains('r')) {
+        transposeNoteByAmount(note.keys, amount);
+      }
+    })
+  });
+}
+
 const lick = [
   [
     { keys: ["c/4"], duration: "q", chord: "Dmin7" },
     { keys: ["d/4"], duration: "q" },
     { keys: ["b/4"], duration: "qr" },
-    { keys: ["b/4"], duration: "q" },
+    { keys: ["c/4"], duration: "q" },
   ],
   [
-    { keys: ["c/4"], duration: "8", chord: "G7", },
+    { keys: ["b/4"], duration: "8", chord: "G7", },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" },
+    { keys: ["c/4", "e/4", "g/4"], duration: "8" },
+    { keys: ["c/4"], duration: "8" },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" },
+    { keys: ["c/4", "e/4", "g/4"], duration: "8" }
+  ],
+  [
+    { keys: ["c/4"], duration: "8", chord: "Cmaj7", },
     { keys: ["d/4"], duration: "8" },
     { keys: ["b/4"], duration: "8" },
     { keys: ["c/4", "e/4", "g/4"], duration: "8" },
