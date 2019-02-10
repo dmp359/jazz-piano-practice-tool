@@ -46,7 +46,9 @@ const NOTE_TO_VALUES = {
 */
 function transposeNoteByAmount(note, amount) {
   const currentValue = NOTE_TO_VALUES[note];
-  const newValue = currentValue + amount % 11;
+  console.log(currentValue);
+  const newValue = currentValue + amount % 12;
+  console.log(newValue);
   return getKeyByValue(NOTE_TO_VALUES, newValue);
 }
 
@@ -58,15 +60,17 @@ function transposeLick(lick, amount) {
   // Move each note to new key
   // Return new lick
   let idx;
-  lick.map(bar => {
+  return lick.map(bar => {
     return bar.map(note => {
       if (!note.duration.includes('r')) {
         idx = note.keys.indexOf('/') - 1;
         // TODO: save range (i.e. /4)
         return { 
            ...note,
-           keys: transposeNoteByAmount(note.keys[0].slice(0, idx), amount) + '/4',
+           keys: [ transposeNoteByAmount(note.keys[0].slice(0, idx), amount) + '/4'],
         };
+      } else {
+        return { ... note };
       }
     })
   });
