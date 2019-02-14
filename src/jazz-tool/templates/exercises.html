@@ -12,8 +12,32 @@ Exercises
 
 <section>
     <div>
-        <h1 class="jumbotron-heading">Exercises</h1>
+        <h1 class="heading">Exercises</h1>
+        <div class="modal-body row">
+            <div class="col-md-3">
+                <div class="btn-group-vertical">
+                    <!--TOOD: Generate from iterable data from Flask of exercises-->
+                    <button type="button" class="btn btn-primary active">
+                        Level 1 - ii V I
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        Level 2 - ii V I
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        Level 3 - ii V I
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+              PDF GOES HERE
+            </div>
+          </div>
     </div>
 </section>
-
+<script>
+$('button').click(function() {
+    $('button').removeClass('active');
+    $(this).addClass('active');
+});
+</script>
 {% endblock %}
