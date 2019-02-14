@@ -11,7 +11,9 @@ header {
     background: #5258e3;
 }
 
-/* .btn {
+/* 
+TODO: Override button color to match styling
+.btn {
     background: #333333;
     border-color: #333333;
     color: #fff;
@@ -35,7 +37,7 @@ header {
 }
 
 .content {
-    padding: 2rem 1.5rem;
+    padding: 1rem 1rem;
 }
 
 .jumbotron {
@@ -56,3 +58,15 @@ for rent.html
 .unavailable {
     opacity: 0.25;
 } */
+
+.col-md-3 {
+    padding-left: 0px;
+}
+.btn-primary:not(:disabled):not(.disabled).active:focus {
+    box-shadow: none;
+}
+
+#pdf-content {
+    height: 650px;
+    width: 500px;
+}

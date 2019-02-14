@@ -11,9 +11,39 @@ Exercises
 {% block content %}
 
 <section>
-    <div>
-        <h1 class="jumbotron-heading">Exercises</h1>
+    <div class="container">
+        <div class="row flex-grow-1">
+            <div class="col-md-3 no-float">
+                <div class="btn-group-vertical">
+                    <!--TOOD: Generate from iterable data from Flask of exercises-->
+                    <button type="button" class="btn btn-primary active">
+                        Level 1 - ii V I
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        Level 2 - ii V I
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        Level 3 - ii V I
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6 no-float">
+                <div id="pdf-content"></div>
+            </div>
+        </div>
     </div>
 </section>
+<script>
+$('button').click(function() {
+    $('button').removeClass('active');
+    $(this).addClass('active');
+});
 
+// PDF URL, ideally from AWS or some cloud provider
+const pdf = 'https://www.kungalv.se/siteassets/dokument/skola-barnomsorg/dokument/gymnasieskola/estetiska-programmet/ansokan/sang/fly-me-to-the-moon.pdf';
+const options = {
+    pdfOpenParams: { view: 'FitV'}
+};
+PDFObject.embed(pdf,'#pdf-content', options);
+</script>
 {% endblock %}
