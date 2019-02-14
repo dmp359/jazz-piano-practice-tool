@@ -6,8 +6,6 @@ import os, json
 
 
 app = Flask(__name__, static_folder='public', static_url_path='')
-app.config["CACHE_TYPE"] = "null"
-# change to "redis" and restart to cache again
 
 # # Read bike data from data.txt
 # with open('data.txt') as json_file:  
@@ -24,9 +22,9 @@ def index():
 def base_static(path):
     return send_file(os.path.join(app.root_path, '..', 'resources', path))
 
-@app.route('/bikes')
-def bikes():
-    return render_template('bikes.html', data=bike_data, base_bikes_url="/img/bikes/")
+# @app.route('/bikes')
+# def bikes():
+#     return render_template('bikes.html', data=bike_data, base_bikes_url="/img/bikes/")
 
 # Handle any unhandled filename by loading its template.
 @app.route('/<name>')
@@ -36,6 +34,8 @@ def generic(name):
 
 # Any additional handlers that go beyond simply loading a template
 # (e.g., a handler that needs to pass data to a template) can be added here
+
+# Stop caching
 @app.after_request
 def add_header(response):
     response.cache_control.no_store = True
