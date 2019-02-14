@@ -20,6 +20,7 @@ CS530: DUI, Project -->
     <script src="/resources/lib/tone-js/Tone.js"></script>
     <script src="/resources/lib/tone-js/tonejs-ui.js"></script>
     <script src="/resources/lib/vexflow/vexflow-min.js"></script>
+    <script src='/resources/lib/pdfobject/pdfobject.js'></script>
 
 </head>
 
@@ -60,7 +61,7 @@ CS530: DUI, Project -->
                     
                     <div class="float-right">
                             <img src="/img/metronome.svg" style="max-height: 40px;">
-                            <tone-slider label="bpm" min="60" max="500" exp="2" value="120"></tone-slider>
+                            <tone-slider label="bpm" min="60" max="300" exp="2" value="120"></tone-slider>
                             <tone-play-toggle style="width: 10%"></tone-play-toggle>
                     </div>            
             {% block content %}{% endblock %}

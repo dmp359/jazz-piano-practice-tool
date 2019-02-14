@@ -37,7 +37,7 @@ TODO: Override button color to match styling
 }
 
 .content {
-    padding: 2rem 1.5rem;
+    padding: 1rem 1rem;
 }
 
 .jumbotron {
@@ -64,4 +64,9 @@ for rent.html
 }
 .btn-primary:not(:disabled):not(.disabled).active:focus {
     box-shadow: none;
+}
+
+#pdf-content {
+    height: 650px;
+    width: 500px;
 }
