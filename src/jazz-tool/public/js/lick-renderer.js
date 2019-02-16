@@ -1,16 +1,36 @@
+// TODO: handle triplets in object creation of Stave Note
+const lick = [
+  [
+    { keys: ["d/4"], duration: "q", chord: "Dmin7" },
+    { keys: ["f/4"], duration: "q" },
+    { keys: ["b/4"], duration: "qr" },
+    { keys: ["a/4"], duration: "q" },
+  ],
+  [
+    { keys: ["b/4"], duration: "8", chord: "G7", },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["d/4"], accidental: "#", duration: "8" },
+    { keys: ["e/4"], duration: "8" },
+    { keys: ["f/4"], duration: "8" },
+    { keys: ["g/4"], duration: "8" },
+    { keys: ["a/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" }
+  ],
+  [
+    { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
+    { keys: ["b/4"], duration: "8" },
+    { keys: ["g/4"], duration: "8" },
+    { keys: ["e/4"], duration: "8" },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["c/4"], duration: "8" },
+    { keys: ["b/3"], duration: "8" },
+    { keys: ["d/4"], duration: "8" }
+  ],
+];
+
 // https://groups.google.com/forum/#!topic/vexflow/gQ7Zw97Zl6k
 VF = Vex.Flow;
 
-const width = 1000;
-const height = 300;
-var vf = new Vex.Flow.Factory({
-  renderer: {elementId: 'boo1', width: width, height: height}
-});
-var vf2 = new Vex.Flow.Factory({
-  renderer: {elementId: 'boo2', width: width, height: height}
-});
-var ctx = vf.context;
-var ctx2 = vf2.context;
 
 // Formation annotation for chord symbol
 function newAnnotation(text) {
@@ -38,7 +58,7 @@ const swapCase = (str) => str.split('').map(c => {
 */
 
 function applyAccidental(pitch, acc) {
-  console.log('applying pitch ' + pitch + 'with accidental' + acc)
+  // console.log('applying pitch ' + pitch + 'with accidental' + acc)
   // Given a natural pitch with #, i.e. c, return c#
   if (pitch.length < 2) {
     return pitch + acc;
@@ -85,7 +105,6 @@ const C_DISTANCES = {
 };
 
 // For printing in dropdown, use object.keys of SCALES and an iterator. C = +0. Db = +1. D = +2.. etc
-// const SUPPORTED_KEYS = [ 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 const SCALES = {
   'C': ['c','d','e','f','g','a','b'],
   'Db': ['dB','eB','f','gB','aB','bB','c'],
@@ -161,7 +180,7 @@ function transposeLickByKey(lick, fromKey, toKey) {
         newNote = transposeNoteByKey(pitch, fromKey, toKey, octave, note.accidental);
 
         // Check for accidental
-        console.log("new note is " + newNote);
+        // console.log("new note is " + newNote);
         if (isAccidental(newNote)) {
           if (note.chord) {
             return {
@@ -202,133 +221,94 @@ function transposeLickByKey(lick, fromKey, toKey) {
     });
   });
 }
-// TODO: handle triplets in object creation of Stave Note
-const lick = [
-  [
-    { keys: ["d/4"], duration: "q", chord: "Dmin7" },
-    { keys: ["f/4"], duration: "q" },
-    { keys: ["b/4"], duration: "qr" },
-    { keys: ["a/4"], duration: "q" },
-  ],
-  [
-    { keys: ["b/4"], duration: "8", chord: "G7", },
-    { keys: ["d/4"], duration: "8" },
-    { keys: ["d/4"], accidental: "#", duration: "8" },
-    { keys: ["e/4"], duration: "8" },
-    { keys: ["f/4"], duration: "8" },
-    { keys: ["g/4"], duration: "8" },
-    { keys: ["a/4"], duration: "8" },
-    { keys: ["b/4"], duration: "8" }
-  ],
-  [
-    { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
-    { keys: ["b/4"], duration: "8" },
-    { keys: ["g/4"], duration: "8" },
-    { keys: ["e/4"], duration: "8" },
-    { keys: ["d/4"], duration: "8" },
-    { keys: ["c/4"], duration: "8" },
-    { keys: ["b/3"], duration: "8" },
-    { keys: ["d/4"], duration: "8" }
-  ],
-];
 
-const length = 300;
-let offsetX = 0;
-let n;
 
 // Draw the music given a lick array of measure data
-lick.forEach((measure, i) => {
+function renderLick(lick) {
+  const length = 300;
+  let offsetX = 0;
+  let n;
 
-  // Instantiate stave (measure)
-  var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
+  const width = 1000;
+  const height = 200;
+  var vf = new Vex.Flow.Factory({
+    renderer: { elementId: 'lick', width: width, height: height }
+  });
+  var ctx = vf.context;
+  lick.forEach((measure, i) => {
 
-   // Draw clef and time signature on first measure
-  if (i == 0) {
-    staveMeasure.addClef("treble").addTimeSignature("4/4");
-  }
+    // Instantiate stave (measure)
+    var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
 
-  // Draw staff lines
-  staveMeasure.setContext(ctx).draw();
-
-  // Create notes from array
-  var notesForMeasure = measure.map(note => {
-    console.log(note.keys);
-    n = new Vex.Flow.StaveNote(note);
-
-    // If a chord symbol is requested, add it
-    if (note.chord) {
-      n.addAnnotation(0, newAnnotation(note.chord));
+    // Draw clef and time signature on first measure
+    if (i == 0) {
+      staveMeasure.addClef("treble").addTimeSignature("4/4");
     }
-    // If accidental is requested, add it
-    if (note.accidental) {
-      n.addAccidental(0, new VF.Accidental(note.accidental))
-    }
-    return n;
+
+    // Draw staff lines
+    staveMeasure.setContext(ctx).draw();
+
+    // Create notes from array
+    var notesForMeasure = measure.map(note => {
+      n = new Vex.Flow.StaveNote(note);
+
+      // If a chord symbol is requested, add it
+      if (note.chord) {
+        n.addAnnotation(0, newAnnotation(note.chord));
+      }
+      // If accidental is requested, add it
+      if (note.accidental) {
+        n.addAccidental(0, new VF.Accidental(note.accidental))
+      }
+      return n;
+    });
+
+    // Automatic beaming
+    var beams = VF.Beam.generateBeams(notesForMeasure);
+    var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
+    voice.addTickables(notesForMeasure);
+    var formatter = new Vex.Flow.Formatter();
+    formatter.joinVoices([voice]).formatToStave([voice], staveMeasure);
+    voice.draw(ctx, staveMeasure);
+    beams.forEach(function(beam) {
+      beam.setContext(ctx).draw();
+    });
+
+    // Helper function to justify and draw a 4/4 voice
+    Vex.Flow.Formatter.FormatAndDraw(ctx, staveMeasure, notesForMeasure);
+    
+    // Juxtapose next measure next to previous measure
+    offsetX += staveMeasure.width;
   });
 
-  // Automatic beaming
-  var beams = VF.Beam.generateBeams(notesForMeasure);
-  var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
-  voice.addTickables(notesForMeasure);
-  var formatter = new Vex.Flow.Formatter();
-  formatter.joinVoices([voice]).formatToStave([voice], staveMeasure);
-  voice.draw(ctx, staveMeasure);
-  beams.forEach(function(beam) {
-    beam.setContext(ctx).draw();
+  offsetX = 0;
+}
+
+
+// Can't think of an easier way than this. Vex flow doesn't nicely allow re-drawing
+function clearStaff() {
+  $('#lick').remove();
+  const $lickDiv = $('<div>').attr('id', 'lick');
+  $lickDiv.insertBefore('#keys');
+}
+
+
+// Render buttons for variable lick
+function renderKeyButtons() {
+  let $keyButton;
+  const SUPPORTED_KEYS = [ 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+  SUPPORTED_KEYS.forEach(note => {
+    $keyButton = $('<button>').addClass('btn btn-primary').text(note).attr('id', note);
+    $keyButton.click(k => {
+      clearStaff();
+      renderLick(transposeLickByKey(lick, 'C', k.target.id));
+    });
+    $('#keys').append($keyButton);
   });
+}
 
-  // Helper function to justify and draw a 4/4 voice
-  Vex.Flow.Formatter.FormatAndDraw(ctx, staveMeasure, notesForMeasure);
-  
-  // Juxtapose next measure next to previous measure
-  offsetX += staveMeasure.width;
-});
-
-offsetX = 0;
-const newLick = transposeLickByKey(lick, 'C', 'G');
-newLick.forEach((measure, i) => {
-
-  // Instantiate stave (measure)
-  var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
-
-   // Draw clef and time signature on first measure
-  if (i == 0) {
-    staveMeasure.addClef("treble").addTimeSignature("4/4");
-  }
-
-  // Draw staff lines
-  staveMeasure.setContext(ctx2).draw();
-
-  // Create notes from array
-  var notesForMeasure = measure.map(note => {
-    console.log(note.keys);
-    n = new Vex.Flow.StaveNote(note);
-
-    // If a chord symbol is requested, add it
-    if (note.chord) {
-      n.addAnnotation(0, newAnnotation(note.chord));
-    }
-    // If accidental is requested, add it
-    if (note.accidental) {
-      n.addAccidental(0, new VF.Accidental(note.accidental))
-    }
-    return n;
-  });
-
-  // Automatic beaming
-  var beams = VF.Beam.generateBeams(notesForMeasure);
-  var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
-  voice.addTickables(notesForMeasure);
-  var formatter = new Vex.Flow.Formatter();
-  formatter.joinVoices([voice]).formatToStave([voice], staveMeasure);
-  voice.draw(ctx2, staveMeasure);
-  beams.forEach(function(beam) {
-    beam.setContext(ctx2).draw();
-  });
-
-  // Helper function to justify and draw a 4/4 voice
-  Vex.Flow.Formatter.FormatAndDraw(ctx2, staveMeasure, notesForMeasure);
-  
-  // Juxtapose next measure next to previous measure
-  offsetX += staveMeasure.width;
+// Render lick in C on load
+$(document).ready(() => {
+  renderLick(lick);
+  renderKeyButtons();
 });
