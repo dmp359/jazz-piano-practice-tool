@@ -34,16 +34,16 @@ Exercises
     </div>
 </section>
 <script>
-$('button').click(function() {
-    $('button').removeClass('active');
-    $(this).addClass('active');
-});
+    $('button').click(function() {
+        $('button').removeClass('active');
+        $(this).addClass('active');
+    });
 
-// PDF URL, ideally from AWS or some cloud provider
-const pdf = 'https://www.kungalv.se/siteassets/dokument/skola-barnomsorg/dokument/gymnasieskola/estetiska-programmet/ansokan/sang/fly-me-to-the-moon.pdf';
-const options = {
-    pdfOpenParams: { view: 'FitV'}
-};
-PDFObject.embed(pdf,'#pdf-content', options);
+    // PDF URL, ideally from AWS or some cloud provider
+    const pdf = 'https://www.kungalv.se/siteassets/dokument/skola-barnomsorg/dokument/gymnasieskola/estetiska-programmet/ansokan/sang/fly-me-to-the-moon.pdf';
+    const options = {
+        pdfOpenParams: { view: 'FitV'}
+    };
+    PDFObject.embed(pdf,'#pdf-content', options);
 </script>
 {% endblock %}
