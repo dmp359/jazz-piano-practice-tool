@@ -1,3 +1,33 @@
+// TODO: handle triplets in object creation of Stave Note
+const lick = [
+  [
+    { keys: ["d/4"], duration: "q", chord: "Dmin7" },
+    { keys: ["f/4"], duration: "q" },
+    { keys: ["b/4"], duration: "qr" },
+    { keys: ["a/4"], duration: "q" },
+  ],
+  [
+    { keys: ["b/4"], duration: "8", chord: "G7", },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["d/4"], accidental: "#", duration: "8" },
+    { keys: ["e/4"], duration: "8" },
+    { keys: ["f/4"], duration: "8" },
+    { keys: ["g/4"], duration: "8" },
+    { keys: ["a/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" }
+  ],
+  [
+    { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
+    { keys: ["b/4"], duration: "8" },
+    { keys: ["g/4"], duration: "8" },
+    { keys: ["e/4"], duration: "8" },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["c/4"], duration: "8" },
+    { keys: ["b/3"], duration: "8" },
+    { keys: ["d/4"], duration: "8" }
+  ],
+];
+
 // https://groups.google.com/forum/#!topic/vexflow/gQ7Zw97Zl6k
 VF = Vex.Flow;
 
@@ -6,11 +36,7 @@ const height = 300;
 var vf = new Vex.Flow.Factory({
   renderer: {elementId: 'boo1', width: width, height: height}
 });
-var vf2 = new Vex.Flow.Factory({
-  renderer: {elementId: 'boo2', width: width, height: height}
-});
 var ctx = vf.context;
-var ctx2 = vf2.context;
 
 // Formation annotation for chord symbol
 function newAnnotation(text) {
@@ -202,35 +228,6 @@ function transposeLickByKey(lick, fromKey, toKey) {
     });
   });
 }
-// TODO: handle triplets in object creation of Stave Note
-const lick = [
-  [
-    { keys: ["d/4"], duration: "q", chord: "Dmin7" },
-    { keys: ["f/4"], duration: "q" },
-    { keys: ["b/4"], duration: "qr" },
-    { keys: ["a/4"], duration: "q" },
-  ],
-  [
-    { keys: ["b/4"], duration: "8", chord: "G7", },
-    { keys: ["d/4"], duration: "8" },
-    { keys: ["d/4"], accidental: "#", duration: "8" },
-    { keys: ["e/4"], duration: "8" },
-    { keys: ["f/4"], duration: "8" },
-    { keys: ["g/4"], duration: "8" },
-    { keys: ["a/4"], duration: "8" },
-    { keys: ["b/4"], duration: "8" }
-  ],
-  [
-    { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
-    { keys: ["b/4"], duration: "8" },
-    { keys: ["g/4"], duration: "8" },
-    { keys: ["e/4"], duration: "8" },
-    { keys: ["d/4"], duration: "8" },
-    { keys: ["c/4"], duration: "8" },
-    { keys: ["b/3"], duration: "8" },
-    { keys: ["d/4"], duration: "8" }
-  ],
-];
 
 const length = 300;
 let offsetX = 0;
@@ -279,55 +276,6 @@ lick.forEach((measure, i) => {
 
   // Helper function to justify and draw a 4/4 voice
   Vex.Flow.Formatter.FormatAndDraw(ctx, staveMeasure, notesForMeasure);
-  
-  // Juxtapose next measure next to previous measure
-  offsetX += staveMeasure.width;
-});
-
-offsetX = 0;
-const newLick = transposeLickByKey(lick, 'C', 'G');
-newLick.forEach((measure, i) => {
-
-  // Instantiate stave (measure)
-  var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
-
-   // Draw clef and time signature on first measure
-  if (i == 0) {
-    staveMeasure.addClef("treble").addTimeSignature("4/4");
-  }
-
-  // Draw staff lines
-  staveMeasure.setContext(ctx2).draw();
-
-  // Create notes from array
-  var notesForMeasure = measure.map(note => {
-    console.log(note.keys);
-    n = new Vex.Flow.StaveNote(note);
-
-    // If a chord symbol is requested, add it
-    if (note.chord) {
-      n.addAnnotation(0, newAnnotation(note.chord));
-    }
-    // If accidental is requested, add it
-    if (note.accidental) {
-      n.addAccidental(0, new VF.Accidental(note.accidental))
-    }
-    return n;
-  });
-
-  // Automatic beaming
-  var beams = VF.Beam.generateBeams(notesForMeasure);
-  var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
-  voice.addTickables(notesForMeasure);
-  var formatter = new Vex.Flow.Formatter();
-  formatter.joinVoices([voice]).formatToStave([voice], staveMeasure);
-  voice.draw(ctx2, staveMeasure);
-  beams.forEach(function(beam) {
-    beam.setContext(ctx2).draw();
-  });
-
-  // Helper function to justify and draw a 4/4 voice
-  Vex.Flow.Formatter.FormatAndDraw(ctx2, staveMeasure, notesForMeasure);
   
   // Juxtapose next measure next to previous measure
   offsetX += staveMeasure.width;
