@@ -1,20 +1,57 @@
 // TODO: handle triplets in object creation of Stave Note
+// const lick = [
+//   [
+//     { keys: ["d/4"], duration: "q", chord: "Dmin7" },
+//     { keys: ["f/4"], duration: "q" },
+//     { keys: ["b/4"], duration: "qr" },
+//     { keys: ["a/4"], duration: "q" },
+//   ],
+//   [
+//     { keys: ["b/4"], duration: "8", chord: "G7", },
+//     { keys: ["d/4"], duration: "8" },
+//     { keys: ["d/4"], accidental: "#", duration: "8" },
+//     { keys: ["e/4"], duration: "8" },
+//     { keys: ["f/4"], duration: "8" },
+//     { keys: ["g/4"], duration: "8" },
+//     { keys: ["a/4"], duration: "8" },
+//     { keys: ["b/4"], duration: "8" }
+//   ],
+//   [
+//     { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
+//     { keys: ["b/4"], duration: "8" },
+//     { keys: ["g/4"], duration: "8" },
+//     { keys: ["e/4"], duration: "8" },
+//     { keys: ["d/4"], duration: "8" },
+//     { keys: ["c/4"], duration: "8" },
+//     { keys: ["b/3"], duration: "8" },
+//     { keys: ["d/4"], duration: "8" }
+//   ],
+// ];
+const sharp = '#';
+const flat = 'B';
+const natural = 'n';
+
+// Chromatic up
 const lick = [
   [
-    { keys: ["d/4"], duration: "q", chord: "Dmin7" },
-    { keys: ["f/4"], duration: "q" },
-    { keys: ["b/4"], duration: "qr" },
-    { keys: ["a/4"], duration: "q" },
+    { keys: ["c/4"], duration: "8", chord: "Dmin7" },
+    { keys: ["c/4"], accidental: '#', duration: "8" },
+    { keys: ["d/4"], accidental: 'b', duration: "8" },
+    { keys: ["d/4"], accidental: 'n', duration: "8" },
+    { keys: ["d/4"], accidental: '#', duration: "8" },
+    { keys: ["e/4"], accidental: 'b', duration: "8" },
+    { keys: ["e/4"], accidental: 'n', duration: "8" },
+    { keys: ["f/4"], duration: "8" },
   ],
   [
-    { keys: ["b/4"], duration: "8", chord: "G7", },
-    { keys: ["d/4"], duration: "8" },
-    { keys: ["d/4"], accidental: "#", duration: "8" },
-    { keys: ["e/4"], duration: "8" },
-    { keys: ["f/4"], duration: "8" },
-    { keys: ["g/4"], duration: "8" },
-    { keys: ["a/4"], duration: "8" },
-    { keys: ["b/4"], duration: "8" }
+    { keys: ["f/4"], accidental: '#', duration: "8", chord: "G7", },
+    { keys: ["g/4"], accidental: 'b', duration: "8" },
+    { keys: ["g/4"], accidental: 'n', duration: "8" },
+    { keys: ["g/4"], accidental: '#', duration: "8" },
+    { keys: ["a/4"], accidental: 'b', duration: "8" },
+    { keys: ["a/4"], accidental: 'n', duration: "8" },
+    { keys: ["b/4"], accidental: 'b', duration: "8" },
+    { keys: ["b/4"], accidental: '#', duration: "8" },
   ],
   [
     { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
@@ -39,9 +76,7 @@ function newAnnotation(text) {
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
-const sharp = '#';
-const flat = 'B';
-const natural = 'n';
+
 const isAccidental = (note) => note.indexOf(sharp) > -1
   || note.indexOf(flat) > -1 || note.indexOf(natural) > -1;
 const swapCase = (str) => str.split('').map(c => {
@@ -51,6 +86,7 @@ const swapCase = (str) => str.split('').map(c => {
 /*
 * given a natural pitch with #, i.e. c, return c#
 * given a natural pitch with b, i.e. c, return cb
+* if a natural is specified, just return the pitch
 * given a sharp pitch with #, return with double sharp, i.e. c#, return c##
 * given a sharp pitch with b, return with natural, i.e. c#, return cn
 * given a flat pitch with #, return the natural, i.e. cb, return cn
@@ -58,10 +94,14 @@ const swapCase = (str) => str.split('').map(c => {
 */
 
 function applyAccidental(pitch, acc) {
-  // console.log('applying pitch ' + pitch + 'with accidental' + acc)
-  // Given a natural pitch with #, i.e. c, return c#
+  // Given a natural pitch with no natural accidental specified, return pitch + new acc
   if (pitch.length < 2) {
     return pitch + acc;
+  }
+
+  // Given a natural pitch with natural accidental specified, return pitch
+  if (acc == natural) {
+    return pitch;
   }
 
   // Is a sharp pitch
@@ -84,6 +124,7 @@ function applyAccidental(pitch, acc) {
 // In real music it is the other way around, but Vex is stupid
 // and requires lowercase note names
 const C_DISTANCES = {
+  'b#': 0,
   'c': 0,
   'c#': 1,
   'dB': 1,
@@ -104,7 +145,7 @@ const C_DISTANCES = {
   'cB': 11,
 };
 
-// For printing in dropdown, use object.keys of SCALES and an iterator. C = +0. Db = +1. D = +2.. etc
+// All major scales, needed for transposition
 const SCALES = {
   'C': ['c','d','e','f','g','a','b'],
   'Db': ['dB','eB','f','gB','aB','bB','c'],
@@ -133,8 +174,8 @@ function transposeNoteByKey(note, toKey, octave, acc) {
   const difference = C_DISTANCES[note] - C_DISTANCES[newPitch];
   let newOctave = octave;
   
-  // Transpose down and shift up if the difference between the old key is negative
-  if (difference > 0) {
+  // Shift octave up if the note is beyond halfway between c and the pitch. Also special case needed for cB
+  if (difference > 0 || (difference == -6 && newPitch == 'cB')) {
     newOctave++;
   }
 
@@ -179,7 +220,6 @@ function transposeLickByKey(lick, toKey) {
         newNote = transposeNoteByKey(pitch, toKey, octave, note.accidental);
 
         // Check for accidental
-        // console.log("new note is " + newNote);
         if (isAccidental(newNote)) {
           if (note.chord) {
             return {
@@ -213,7 +253,7 @@ function transposeLickByKey(lick, toKey) {
       if (note.chord) {
         return {
           ...note,
-          chord: updateChord(note.chord, fromKey, toKey),
+          chord: updateChord(note.chord, toKey),
        };
       }
       return { ... note };
@@ -248,20 +288,22 @@ function renderLick(lick) {
     staveMeasure.setContext(ctx).draw();
 
     // Create notes from array
-    var notesForMeasure = measure.map(note => {
+    const notesForMeasure = measure.map(note => {
       n = new Vex.Flow.StaveNote(note);
+
+      // If accidental is requested, add it
+      if (note.accidental) {
+        n.addAccidental(0, new VF.Accidental(note.accidental))
+      }
 
       // If a chord symbol is requested, add it
       if (note.chord) {
         n.addAnnotation(0, newAnnotation(note.chord));
       }
-      // If accidental is requested, add it
-      if (note.accidental) {
-        n.addAccidental(0, new VF.Accidental(note.accidental))
-      }
       return n;
     });
 
+    console.log(notesForMeasure);
     // Automatic beaming
     var beams = VF.Beam.generateBeams(notesForMeasure);
     var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
