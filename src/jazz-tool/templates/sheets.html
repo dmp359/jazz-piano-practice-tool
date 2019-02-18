@@ -11,9 +11,9 @@ Sheets
 {% block content %}
 
 <section>
-    <div class="container">
+    <div class="content">
         <div class="row flex-grow-1">
-            <div class="col-md-3 no-float">
+            <div style="float: left" class="no-float">
                 <div class="btn-group-vertical">
                     <!--TOOD: Generate from iterable data from Flask-->
                     <button type="button" style="width: 300px" class="btn btn-primary active">
@@ -33,7 +33,7 @@ Sheets
                     </button>
                 </div>
             </div>
-            <div class="col-md-6 no-float">
+            <div style="float:center">
                 <div id="pdf-content"></div>
             </div>
         </div>
