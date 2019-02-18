@@ -122,12 +122,11 @@ const SCALES = {
 
 /*
 * @param note {string}
-* @param fromKey, i.e. 'C'
 * @param toKey, i.e. 'Bb'
 * return new note
 */
-function transposeNoteByKey(note, fromKey, toKey, octave, acc) {
-  const degree = SCALES[fromKey].indexOf(note);
+function transposeNoteByKey(note, toKey, octave, acc) {
+  const degree = SCALES['C'].indexOf(note);
   let newPitch = SCALES[toKey][degree];
 
   // Check octave
@@ -149,10 +148,10 @@ function transposeNoteByKey(note, fromKey, toKey, octave, acc) {
 /*
 * @param chord {string} chord name
 */
-function updateChord(chord, fromKey, toKey) {
+function updateChord(chord, toKey) {
   const note = chord[0];
   const name = chord.substring(1, chord.length);
-  const degree = SCALES[fromKey].indexOf(note.toLocaleLowerCase());
+  const degree = SCALES['C'].indexOf(note.toLocaleLowerCase());
 
   let prefix = SCALES[toKey][degree]; // a note, like c or dB or c#
 
@@ -164,7 +163,7 @@ function updateChord(chord, fromKey, toKey) {
 /*
   @param lick [Array[Arrays]]
 */
-function transposeLickByKey(lick, fromKey, toKey) {
+function transposeLickByKey(lick, toKey) {
   // Loop over all measures
   // Move each note to new key
   // Return new lick
@@ -177,7 +176,7 @@ function transposeLickByKey(lick, fromKey, toKey) {
         idx = note.keys.indexOf('/') - 1;
         pitch = note.keys[0].slice(0, idx); // parse keys object for the note, i.e. 'c' in ['c/4']
         octave = note.keys[0].slice(idx + 1, note.keys[0].length); // "" "" .. i.e. '4' in ['c/4']
-        newNote = transposeNoteByKey(pitch, fromKey, toKey, octave, note.accidental);
+        newNote = transposeNoteByKey(pitch, toKey, octave, note.accidental);
 
         // Check for accidental
         // console.log("new note is " + newNote);
@@ -187,7 +186,7 @@ function transposeLickByKey(lick, fromKey, toKey) {
               ...note,
               keys: [ newNote.substring(0, 1) + newNote.substr(-2) ], // remove accidental
               accidental: newNote.substring(1, newNote.indexOf('/')).toLocaleLowerCase(), // add it here
-              chord: updateChord(note.chord, fromKey, toKey),
+              chord: updateChord(note.chord, toKey),
             };
           }
           return {
@@ -201,13 +200,13 @@ function transposeLickByKey(lick, fromKey, toKey) {
           return {
             ...note,
             accidental: undefined,
-            keys: [ transposeNoteByKey(pitch, fromKey, toKey, octave, note.accidental) ],
-            chord: updateChord(note.chord, fromKey, toKey),
+            keys: [ transposeNoteByKey(pitch, toKey, octave, note.accidental) ],
+            chord: updateChord(note.chord, toKey),
          };
         }
         return {
            ...note,
-           keys: [ transposeNoteByKey(pitch, fromKey, toKey, octave, note.accidental) ],
+           keys: [ transposeNoteByKey(pitch, toKey, octave, note.accidental) ],
         };
       }
       // Rest
@@ -301,7 +300,7 @@ function renderKeyButtons() {
     $keyButton = $('<button>').addClass('btn btn-primary').text(note).attr('id', note);
     $keyButton.click(k => {
       clearStaff();
-      renderLick(transposeLickByKey(lick, 'C', k.target.id));
+      renderLick(transposeLickByKey(lick, k.target.id));
     });
     $('#keys').append($keyButton);
   });
