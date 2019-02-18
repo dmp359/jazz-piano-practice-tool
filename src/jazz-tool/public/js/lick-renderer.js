@@ -1,57 +1,20 @@
 // TODO: handle triplets in object creation of Stave Note
-// const lick = [
-//   [
-//     { keys: ["d/4"], duration: "q", chord: "Dmin7" },
-//     { keys: ["f/4"], duration: "q" },
-//     { keys: ["b/4"], duration: "qr" },
-//     { keys: ["a/4"], duration: "q" },
-//   ],
-//   [
-//     { keys: ["b/4"], duration: "8", chord: "G7", },
-//     { keys: ["d/4"], duration: "8" },
-//     { keys: ["d/4"], accidental: "#", duration: "8" },
-//     { keys: ["e/4"], duration: "8" },
-//     { keys: ["f/4"], duration: "8" },
-//     { keys: ["g/4"], duration: "8" },
-//     { keys: ["a/4"], duration: "8" },
-//     { keys: ["b/4"], duration: "8" }
-//   ],
-//   [
-//     { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
-//     { keys: ["b/4"], duration: "8" },
-//     { keys: ["g/4"], duration: "8" },
-//     { keys: ["e/4"], duration: "8" },
-//     { keys: ["d/4"], duration: "8" },
-//     { keys: ["c/4"], duration: "8" },
-//     { keys: ["b/3"], duration: "8" },
-//     { keys: ["d/4"], duration: "8" }
-//   ],
-// ];
-const sharp = '#';
-const flat = 'B';
-const natural = 'n';
-
-// Chromatic up
 const lick = [
   [
-    { keys: ["c/4"], duration: "8", chord: "Dmin7" },
-    { keys: ["c/4"], accidental: '#', duration: "8" },
-    { keys: ["d/4"], accidental: 'b', duration: "8" },
-    { keys: ["d/4"], accidental: 'n', duration: "8" },
-    { keys: ["d/4"], accidental: '#', duration: "8" },
-    { keys: ["e/4"], accidental: 'b', duration: "8" },
-    { keys: ["e/4"], accidental: 'n', duration: "8" },
-    { keys: ["f/4"], duration: "8" },
+    { keys: ["d/4"], duration: "q", chord: "Dmin7" },
+    { keys: ["f/4"], duration: "q" },
+    { keys: ["b/4"], duration: "qr" },
+    { keys: ["a/4"], duration: "q" },
   ],
   [
-    { keys: ["f/4"], accidental: '#', duration: "8", chord: "G7", },
-    { keys: ["g/4"], accidental: 'b', duration: "8" },
-    { keys: ["g/4"], accidental: 'n', duration: "8" },
-    { keys: ["g/4"], accidental: '#', duration: "8" },
-    { keys: ["a/4"], accidental: 'b', duration: "8" },
-    { keys: ["a/4"], accidental: 'n', duration: "8" },
-    { keys: ["b/4"], accidental: 'b', duration: "8" },
-    { keys: ["b/4"], accidental: '#', duration: "8" },
+    { keys: ["b/4"], duration: "8", chord: "G7", },
+    { keys: ["d/4"], duration: "8" },
+    { keys: ["d/4"], accidental: "#", duration: "8" },
+    { keys: ["e/4"], duration: "8" },
+    { keys: ["f/4"], duration: "8" },
+    { keys: ["g/4"], duration: "8" },
+    { keys: ["a/4"], duration: "8" },
+    { keys: ["b/4"], duration: "8" }
   ],
   [
     { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
@@ -64,6 +27,43 @@ const lick = [
     { keys: ["d/4"], duration: "8" }
   ],
 ];
+const sharp = '#';
+const flat = 'B';
+const natural = 'n';
+
+// Chromatic up
+// const lick = [
+//   [
+//     { keys: ["c/4"], duration: "8", chord: "Dmin7" },
+//     { keys: ["c/4"], accidental: '#', duration: "8" },
+//     { keys: ["d/4"], accidental: 'b', duration: "8" },
+//     { keys: ["d/4"], accidental: 'n', duration: "8" },
+//     { keys: ["d/4"], accidental: '#', duration: "8" },
+//     { keys: ["e/4"], accidental: 'b', duration: "8" },
+//     { keys: ["e/4"], accidental: 'n', duration: "8" },
+//     { keys: ["f/4"], duration: "8" },
+//   ],
+//   [
+//     { keys: ["f/4"], accidental: '#', duration: "8", chord: "G7", },
+//     { keys: ["g/4"], accidental: 'b', duration: "8" },
+//     { keys: ["g/4"], accidental: 'n', duration: "8" },
+//     { keys: ["g/4"], accidental: '#', duration: "8" },
+//     { keys: ["a/4"], accidental: 'b', duration: "8" },
+//     { keys: ["a/4"], accidental: 'n', duration: "8" },
+//     { keys: ["b/4"], accidental: 'b', duration: "8" },
+//     { keys: ["b/4"], accidental: '#', duration: "8" },
+//   ],
+//   [
+//     { keys: ["c/5"], duration: "8", chord: "Cmaj7", },
+//     { keys: ["b/4"], duration: "8" },
+//     { keys: ["g/4"], duration: "8" },
+//     { keys: ["e/4"], duration: "8" },
+//     { keys: ["d/4"], duration: "8" },
+//     { keys: ["c/4"], duration: "8" },
+//     { keys: ["b/3"], duration: "8" },
+//     { keys: ["d/4"], duration: "8" }
+//   ],
+// ];
 
 // https://groups.google.com/forum/#!topic/vexflow/gQ7Zw97Zl6k
 VF = Vex.Flow;
