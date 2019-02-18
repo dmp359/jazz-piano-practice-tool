@@ -57,13 +57,12 @@ CS530: DUI, Project -->
     </header>
 
     <main>
-        <div class="container content">
-                    
-                    <div class="float-right">
-                            <img src="/img/metronome.svg" style="max-height: 40px;">
-                            <tone-slider label="bpm" min="60" max="300" exp="2" value="120"></tone-slider>
-                            <tone-play-toggle style="width: 10%"></tone-play-toggle>
-                    </div>            
+        <div class="content">
+            <div class="float-right">
+                    <img src="/img/metronome.svg" style="max-height: 40px;">
+                    <tone-slider label="bpm" min="60" max="300" exp="2" value="120"></tone-slider>
+                    <tone-play-toggle style="width: 10%"></tone-play-toggle>
+            </div>
             {% block content %}{% endblock %}
         </div>
     </main>
