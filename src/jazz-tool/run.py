@@ -31,7 +31,6 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
     """
 
     try:
-        print(bucket_name)
         s3.upload_fileobj(
             file,
             bucket_name,
@@ -43,7 +42,7 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
         )
 
     except Exception as e:
-        print("Something Happened: ", e)
+        print("Error uploading to s3 is: ", e)
         return e
 
     return "{}{}".format(app.config["S3_LOCATION"], file.filename)
@@ -56,7 +55,7 @@ def index():
 
 
 # http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
-@app.route("/", methods=["POST"])
+@app.route("/sheets", methods=["POST"])
 def upload_file():
     print('This is error output', file=sys.stderr)
 
@@ -88,10 +87,10 @@ def upload_file():
         file.filename = secure_filename(file.filename)
         
         output   	  = upload_file_to_s3(file, app.config["S3_BUCKET"])
-        return redirect("/")
+        return redirect("/sheets")
 
     else:
-        return redirect("/")
+        return redirect("/sheets")
 
 # Handle any files that begin "/resources" by loading from the resources directory
 @app.route('/resources/<path:path>')
