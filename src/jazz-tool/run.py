@@ -62,6 +62,7 @@ def index():
 def upload_file():
     if request.method == 'GET':
         return jsonify({'urls': urls})
+
     if "user_file" not in request.files:
         return "No user_file key in request.files"
  
