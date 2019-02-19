@@ -1,7 +1,7 @@
 # Dan Perlman, dmp359@drexel.edu
 # CS530: DUI, Project
 
-from flask import Flask, render_template, send_file, request, redirect
+from flask import Flask, render_template, send_file, request, redirect, jsonify
 from werkzeug.utils import secure_filename
 import boto3, botocore
 
@@ -14,6 +14,9 @@ import os, json, sys
 
 app = Flask(__name__, static_folder='public', static_url_path='')
 app.config.from_object('config')
+
+# TODO: Replace with DB
+urls=[]
 
 """
 S3 Uploading
@@ -45,7 +48,7 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
         print("Error uploading to s3 is: ", e)
         return e
 
-    return "{}{}".format(app.config["S3_LOCATION"], file.filename)
+    return "{}/{}".format(app.config["S3_LOCATION"], file.filename)
 
 
 # Handle the index (home) page
@@ -55,11 +58,13 @@ def index():
 
 
 # http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
-@app.route("/sheets", methods=["POST"])
+@app.route("/api/sheets", methods=["POST", "GET"])
 def upload_file():
+    if request.method == 'GET':
+        return jsonify({'urls': urls})
     if "user_file" not in request.files:
         return "No user_file key in request.files"
-
+ 
     file = request.files["user_file"]
     """
         These attributes are also available
@@ -77,9 +82,12 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.filename = '{}/{}'.format(user_name, secure_filename(file.filename))
         output = upload_file_to_s3(file, app.config["S3_BUCKET"])
+
+        # TODO: Store output URL in db
+        urls.append(output)
         return redirect("/sheets")
     else:
-        return redirect("/sheets")
+        return redirect("/sheets") # TODO: error json msg handling
 
 # Handle any files that begin "/resources" by loading from the resources directory
 @app.route('/resources/<path:path>')
