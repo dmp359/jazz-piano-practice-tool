@@ -36,20 +36,37 @@ Sheets
             <div style="float:center">
                 <div id="pdf-content"></div>
             </div>
+            <form action="/api/sheets" method="POST" enctype="multipart/form-data">
+
+                <label for="user_file">Upload Your File</label>
+                <br />
+                <input type="file" name="user_file">
+                <br />
+                <button type="submit">Upload</button>
+        
+            </form>
         </div>
     </div>
 </section>
 <script>
+    function renderPDF(pdf) {
+        const options = {
+            pdfOpenParams: { view: 'FitV'}
+        };
+        PDFObject.embed(pdf,'#pdf-content', options);
+    }
+
+    // Check api for urls for this user
+    let pdf = 'https://www.swiss-jazz.ch/standards-jazz/Spain.pdf';
+    $.get("/api/sheets", (data) => {
+        if (data.urls.length > 0) {
+            pdf=data.urls[0];
+        }
+        renderPDF(pdf);
+    });
     $('button').click(function() {
         $('button').removeClass('active');
         $(this).addClass('active');
     });
-
-    // PDF URL, ideally from AWS or some cloud provider
-    const pdf = 'https://www.kungalv.se/siteassets/dokument/skola-barnomsorg/dokument/gymnasieskola/estetiska-programmet/ansokan/sang/fly-me-to-the-moon.pdf';
-    const options = {
-        pdfOpenParams: { view: 'FitV'}
-    };
-    PDFObject.embed(pdf,'#pdf-content', options);
 </script>
 {% endblock %}
