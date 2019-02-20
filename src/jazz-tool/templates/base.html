@@ -48,6 +48,23 @@ CS530: DUI, Project -->
                                     <a class="nav-link" href="/sheets">Lead Sheets</a>
                                 </li>
                             </ul>
+                            <ul class="navbar-nav">
+                                {% if session['user'] %}
+                                <li class="nav-item dropdown" style="float: right">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Hi {{ session['user']['name'] }}!
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/logout">Log Out</a>
+                                    </div>
+                                </li>
+                                {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/login">Log In</a>
+                                </li>
+                                {% endif %}
+                            </ul>
                         </div>
                     </nav>
                 </div>

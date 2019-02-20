@@ -1,9 +1,12 @@
 # Dan Perlman, dmp359@drexel.edu
 # CS530: DUI, Project
 
-from flask import Flask, render_template, send_file, request, redirect, jsonify
+from flask import Flask, render_template, send_file, g, session, request, redirect, jsonify
 from werkzeug.utils import secure_filename
+from passlib.hash import pbkdf2_sha256
+
 import boto3, botocore
+from db import Database
 
 ALLOWED_EXTENSIONS = set(['pdf'])
 def allowed_file(filename):
@@ -50,11 +53,44 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
 
     return "{}/{}".format(app.config["S3_LOCATION"], file.filename)
 
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = Database()
+    return db
+
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+# @app.route('/api/goats')
+# def api_goats():
+#     n = request.args.get('n', default=6)
+#     offset = request.args.get('offset', default=0)
+#     goats = get_db().get_goats(n, offset)
+#     return jsonify(goats)
 
 # Handle the index (home) page
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        username = request.form['username']
+        typed_password = request.form['password']
+        if name and username and typed_password:
+            if (get_db().user_exists(username)): # Username must be unique
+                return render_template('register.html', message='Username is already taken')
+            encrypted_password = pbkdf2_sha256.encrypt(typed_password, rounds=200000, salt_size=16)
+            get_db().create_user(name, username, encrypted_password)
+            return redirect('/login')
+    return render_template('register.html')
 
 
 # http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
@@ -95,10 +131,43 @@ def upload_file():
 def base_static(path):
     return send_file(os.path.join(app.root_path, '..', 'resources', path))
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    message = None
+    if request.method == 'POST':
+        username = request.form['username']
+        typed_password = request.form['password']
+        if username and typed_password:
+            user = get_db().get_user(username)
+            if user:
+                if pbkdf2_sha256.verify(typed_password, user['encrypted_password']):
+                    session['user'] = user
+                    return redirect('/')
+                else:
+                    message = "Incorrect password, please try again"
+            else:
+                message = "Unknown user, please try again"
+        elif username and not typed_password:
+            message = "Missing password, please try again"
+        elif not username and typed_password:
+            message = "Missing username, please try again"
+    return render_template('login.html', message=message)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect('/')
+
 # Handle any unhandled filename by loading its template.
 @app.route('/<name>')
 def generic(name):
-    return render_template(name + '.html')
+    # return render_template(name + '.html')
+    if 'user' in session: # User is authenticated
+        return render_template(name + '.html')
+    else:
+        return redirect('/login')
 
 
 # Any additional handlers that go beyond simply loading a template
