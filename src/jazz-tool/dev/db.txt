@@ -1,0 +1,25 @@
+
+sqlite3 users.db
+
+CREATE TABLE users (
+    name TEXT NOT NULL,
+    username TEXT NOT NULL,
+    encrypted_password TEXT NOT NULL
+);
+
+CREATE TABLE sheets (
+    object_url TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    PRIMARY KEY (object_url)
+);
+
+CREATE TABLE user_sheets (
+	username TEXT NOT NULL,
+	object_url integer NOT NULL,
+	PRIMARY KEY (username, object_url),
+	FOREIGN KEY (username) REFERENCES users (username) 
+            ON DELETE CASCADE ON UPDATE NO ACTION,
+	FOREIGN KEY (object_url) REFERENCES sheets (object_url) 
+            ON DELETE CASCADE ON UPDATE NO ACTION
+);
