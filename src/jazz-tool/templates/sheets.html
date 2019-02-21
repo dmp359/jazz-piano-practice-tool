@@ -16,11 +16,7 @@ Sheets
             <div style="float: left" class="no-float">
                 <div class="btn-group-vertical">
                     <!--TOOD: Generate from iterable data from Flask-->
-                    <button type="button" style="width: 300px" class="btn btn-primary active">
-                        <span style="float: left">All the Things You Are</span>
-                        <span style="float: middle">|</span>
-                        <span style="float: right">Ballad</span>
-                    </button>
+
                     <button type="button" class="btn btn-primary">
                         <span style="float: left">Autumn Leaves</span>
                         <span style="float: middle">|</span>
@@ -49,6 +45,7 @@ Sheets
     </div>
 </section>
 <script>
+    // TODO: Put all this in an external file
     function renderPDF(pdf) {
         const options = {
             pdfOpenParams: { view: 'FitV'}
@@ -56,7 +53,7 @@ Sheets
         PDFObject.embed(pdf,'#pdf-content', options);
     }
 
-    // Check api for urls for this user
+    // Check api for urls for this use
     let pdf = 'https://www.swiss-jazz.ch/standards-jazz/Spain.pdf';
     $.get("/api/sheets", (data) => {
         if (data.urls.length > 0) {
@@ -64,6 +61,26 @@ Sheets
         }
         renderPDF(pdf);
     });
+    // const button = <button type="button" style="width: 300px" class="btn btn-primary active">
+    //                     <span style="float: left">All the Things You Are</span>
+    //                     <span style="float: middle">|</span>
+    //                     <span style="float: right">Ballad</span>
+    //                 </button>;
+    // bikes.forEach(bike => {
+    // if (bike.available > 0) {
+    //     $rentButton = $('<button>').addClass('btn').text('Rent').attr('id', `button-${bike.id}`);
+    //     $rentButton.click(() => {
+    //         $(`#${bike.id}`).text(--bike.available)
+    //         if (bike.available <= 0) {
+    //             $(`#button-${bike.id}`).remove();
+    //             $(`#row-${bike.id}`).addClass('unavailable');
+    //         }
+    //     });
+    // }
+    // else {
+    //     $rentButton = null;
+    // }
+
     $('button').click(function() {
         $('button').removeClass('active');
         $(this).addClass('active');

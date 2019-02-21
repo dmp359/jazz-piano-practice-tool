@@ -21,21 +21,21 @@ class Database:
         c.execute(sql, parameters)
         self.conn.commit()
 
-    # def get_goats(self, n, offset):
-    #     data = self.select(
-    #         'SELECT * FROM goats ORDER BY uid ASC LIMIT ? OFFSET ?', [n, offset])
-    #     return [{
-    #         'uid': d[0],
-    #         'name': d[1],
-    #         'age': d[2],
-    #         'adopted': d[3],
-    #     } for d in data]
+    # Schema modeled after http://www.sqlitetutorial.net/tryit/query/sqlite-primary-key/#3
+    def get_sheets(self, username, n=10, offset=0):
 
-    def get_total_goat_count(self):
-        data = self.select('SELECT COUNT(*) FROM goats')
-        return data[0][0]
-
-    #//http://www.sqlitetutorial.net/tryit/query/sqlite-primary-key/#3
+        # Grab n urls for that user
+        data = self.select('SELECT object_url FROM user_sheets WHERE username=? LIMIT ? OFFSET ?', [username, n, offset])
+        if data:
+            # Get the song data from that url in sheets
+            sheet_data = [self.select('SELECT * FROM sheets WHERE object_url=?', [d[0]]) for d in data]
+            return [{
+                'object_url': d[0][0],
+                'name': d[0][1],
+                'description': d[0][2],
+            } for d in sheet_data]
+        else:
+            return None
 
     def create_user(self, name, username, encrypted_password):
         self.execute('INSERT INTO users (name, username, encrypted_password) VALUES (?, ?, ?)',
@@ -56,8 +56,11 @@ class Database:
         else:
             return None
 
-    def update_goat_adopted(self, uid, value):
-        self.execute('UPDATE goats SET adopted=? WHERE uid=?', [value, uid])
+    def add_sheet_url(self, object_url, name, description, username):
+        self.execute('INSERT INTO sheets (object_url, name, description) VALUES (?, ?, ?)',
+                     [object_url, name, description])
+        self.execute('INSERT INTO user_sheets (username, object_url) VALUES (?, ?)',
+                     [username, object_url])
 
     def close(self):
         self.conn.close()
