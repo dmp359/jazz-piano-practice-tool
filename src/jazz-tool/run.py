@@ -104,6 +104,7 @@ def upload_file():
         sheets = get_db().get_sheets(username)
         return jsonify(sheets)
 
+    # (Else is a post attempting to upload a file)
     if 'user_file' not in request.files:
         return 'Error - No user_file key in request.files'
  
@@ -114,9 +115,7 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.filename = '{}/{}'.format(username, secure_filename(file.filename))
         url = upload_file_to_s3(file, app.config['S3_BUCKET'])
-
-        # TODO: Get song name and description from form and add it here
-        get_db().add_sheet_url(url, 'Song1', 'Description1', username)
+        get_db().add_sheet_url(url, request.form['name'], request.form['description'], username)
         return redirect('/sheets')
     else:
         return redirect('/sheets') # TODO: error json msg handling
