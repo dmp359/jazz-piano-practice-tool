@@ -21,20 +21,20 @@ app.config.from_object('config')
 # TODO: Replace with DB
 urls=[]
 
-"""
+'''
 S3 Uploading
-"""
+'''
 s3 = boto3.client(
-   "s3",
+   's3',
    aws_access_key_id=app.config['S3_KEY'],
    aws_secret_access_key=app.config['S3_SECRET']
 )
 
-def upload_file_to_s3(file, bucket_name, acl="public-read"):
+def upload_file_to_s3(file, bucket_name, acl='public-read'):
 
-    """
+    '''
     Docs: http://boto3.readthedocs.io/en/latest/guide/s3.html
-    """
+    '''
 
     try:
         s3.upload_fileobj(
@@ -42,16 +42,16 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
             bucket_name,
             file.filename,
             ExtraArgs={
-                "ACL": acl,
-                "ContentType": file.content_type
+                'ACL': acl,
+                'ContentType': file.content_type
             }
         )
 
     except Exception as e:
-        print("Error uploading to s3 is: ", e)
+        print('Error uploading to s3 is: ', e)
         return e
 
-    return "{}/{}".format(app.config["S3_LOCATION"], file.filename)
+    return '{}/{}'.format(app.config['S3_LOCATION'], file.filename)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -85,7 +85,7 @@ def register():
         username = request.form['username']
         typed_password = request.form['password']
         if name and username and typed_password:
-            if (get_db().user_exists(username)): # Username must be unique
+            if get_db().user_exists(username): # Username must be unique
                 return render_template('register.html', message='Username is already taken')
             encrypted_password = pbkdf2_sha256.encrypt(typed_password, rounds=200000, salt_size=16)
             get_db().create_user(name, username, encrypted_password)
@@ -94,39 +94,33 @@ def register():
 
 
 # http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
-@app.route("/api/sheets", methods=["POST", "GET"])
+@app.route('/api/sheets', methods=['POST', 'GET'])
 def upload_file():
+    if 'user' not in session: # User is unauthenticated
+        return redirect('/login')
+
+    username = session['user']['username']
     if request.method == 'GET':
-        return jsonify({'urls': urls})
+        sheets = get_db().get_sheets(username)
+        return jsonify(sheets)
 
-    if "user_file" not in request.files:
-        return "No user_file key in request.files"
+    # (Else is a post attempting to upload a file)
+    if 'user_file' not in request.files:
+        return 'Error - No user_file key in request.files'
  
-    file = request.files["user_file"]
-    """
-        These attributes are also available
-        file.filename               # The actual name of the file
-        file.content_type
-        file.content_length
-        file.mimetype
-    """
+    file = request.files['user_file']
+    if file.filename == '':
+        return 'Please select a file'
 
-    if file.filename == "":
-        return "Please select a file"
-
-    # TODO: Pull from db
-    user_name = 'john123'
     if file and allowed_file(file.filename):
-        file.filename = '{}/{}'.format(user_name, secure_filename(file.filename))
-        output = upload_file_to_s3(file, app.config["S3_BUCKET"])
-
-        # TODO: Store output URL in db
-        urls.append(output)
-        return redirect("/sheets")
+        file.filename = '{}/{}'.format(username, secure_filename(file.filename))
+        url = upload_file_to_s3(file, app.config['S3_BUCKET'])
+        get_db().add_sheet_url(url, request.form['name'], request.form['description'], username)
+        return redirect('/sheets')
     else:
-        return redirect("/sheets") # TODO: error json msg handling
+        return redirect('/sheets') # TODO: error json msg handling
 
-# Handle any files that begin "/resources" by loading from the resources directory
+# Handle any files that begin '/resources' by loading from the resources directory
 @app.route('/resources/<path:path>')
 def base_static(path):
     return send_file(os.path.join(app.root_path, '..', 'resources', path))
@@ -145,13 +139,13 @@ def login():
                     session['user'] = user
                     return redirect('/')
                 else:
-                    message = "Incorrect password, please try again"
+                    message = 'Incorrect password, please try again'
             else:
-                message = "Unknown user, please try again"
+                message = 'Unknown user, please try again'
         elif username and not typed_password:
-            message = "Missing password, please try again"
+            message = 'Missing password, please try again'
         elif not username and typed_password:
-            message = "Missing username, please try again"
+            message = 'Missing username, please try again'
     return render_template('login.html', message=message)
 
 
@@ -179,5 +173,5 @@ def add_header(response):
     response.cache_control.no_store = True
     return response
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

@@ -16,7 +16,7 @@ CREATE TABLE sheets (
 
 CREATE TABLE user_sheets (
 	username TEXT NOT NULL,
-	object_url integer NOT NULL,
+	object_url TEXT NOT NULL,
 	PRIMARY KEY (username, object_url),
 	FOREIGN KEY (username) REFERENCES users (username) 
             ON DELETE CASCADE ON UPDATE NO ACTION,

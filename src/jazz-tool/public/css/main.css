@@ -66,7 +66,20 @@ for rent.html
     box-shadow: none;
 }
 
+
 #pdf-content {
     height: 650px;
     width: 750px;
+}
+
+.song-button {
+    width: 300px !important;
+}
+
+.song-span {
+    float: left;
+}
+
+.description-span {
+    float: right;
 }

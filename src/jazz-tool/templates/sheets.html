@@ -14,41 +14,40 @@ Sheets
     <div class="content">
         <div class="row flex-grow-1">
             <div style="float: left" class="no-float">
-                <div class="btn-group-vertical">
-                    <!--TOOD: Generate from iterable data from Flask-->
-                    <button type="button" style="width: 300px" class="btn btn-primary active">
-                        <span style="float: left">All the Things You Are</span>
-                        <span style="float: middle">|</span>
-                        <span style="float: right">Ballad</span>
-                    </button>
-                    <button type="button" class="btn btn-primary">
-                        <span style="float: left">Autumn Leaves</span>
-                        <span style="float: middle">|</span>
-                        <span style="float: right">Swing</span>
-                    </button>
-                    <button type="button" class="btn btn-primary">
-                        <span style="float: left">The Girl from Ipanema</span>
-                        <span style="float: middle">|</span>
-                        <span style="float: right">Bossa Nova</span>
-                    </button>
+                <div id='sheet-list' class="btn-group-vertical">
+                    <!--Generates from api call -->
                 </div>
             </div>
             <div style="float:center">
                 <div id="pdf-content"></div>
+                <div id="instructions" class="alert alert-primary">
+                    Upload Your Own Lead Sheets Below!
+                </div>
             </div>
-            <form action="/api/sheets" method="POST" enctype="multipart/form-data">
-
-                <label for="user_file">Upload Your File</label>
-                <br />
-                <input type="file" name="user_file">
-                <br />
-                <button type="submit">Upload</button>
-        
-            </form>
         </div>
+        <form action="/api/sheets" method="POST" enctype="multipart/form-data">
+            <div class="form-group row">
+                    <label for="example-text-input" class="col-2 col-form-label">Song Name</label>
+                    <div class="col-4">
+                        <input class="form-control" type="text" name="name">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="example-text-input" class="col-2 col-form-label">Song Style</label>
+                    <div class="col-4">
+                        <input class="form-control" type="text" name="description">
+                    </div>
+            </div>
+            <label class="btn btn-secondary btn-file" for="user_file">
+                <input type="file" name="user_file">
+            </label>
+            <br />
+            <button class="btn btn-primary" type="submit">Upload</button>
+        </form>
     </div>
 </section>
 <script>
+    // TODO: Put all this in an external file
     function renderPDF(pdf) {
         const options = {
             pdfOpenParams: { view: 'FitV'}
@@ -56,17 +55,51 @@ Sheets
         PDFObject.embed(pdf,'#pdf-content', options);
     }
 
-    // Check api for urls for this user
-    let pdf = 'https://www.swiss-jazz.ch/standards-jazz/Spain.pdf';
+// API returns data like:
+// [
+//   {
+//     "description": "Description1", 
+//     "name": "Song1", 
+//     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/dan/pdf1.pdf"
+//   }, 
+//   {
+//     "description": "Description2", 
+//     "name": "Song2", 
+//     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/dan/pdf2.pdf"
+//   }
+// ]
+
     $.get("/api/sheets", (data) => {
-        if (data.urls.length > 0) {
-            pdf=data.urls[0];
+        if (data) {
+            $('#pdf-content').show();
+            $('#instructions').hide();
+            let $songButton, $songText, $songDescription;
+            data.forEach((song, i) => {
+                $songButton = $('<button>').addClass('btn btn-primary song-button');
+                $songText = $('<span>').addClass('song-span');
+                $songDescription = $('<span>').addClass('description-span');
+                if (i === 0) {
+                    $songButton.addClass('active');
+                }
+                $songText.text(song.name);
+                $songDescription.text(song.description);
+                $songButton.append($songText);
+                $songButton.append($songDescription);
+                $songButton.attr('id', song.object_url);
+                $songButton.click((c) => {
+                    const url = c.currentTarget.id; // Seems hacky
+                    // TODO: Highlight currently selected button
+                    // $(this).removeClass('active');
+                    // $(`#${url}`).addClass('active');
+                    renderPDF(url);
+                });
+                $('#sheet-list').append($songButton);
+            });
+            pdf = data[0].object_url;
+            renderPDF(pdf);
+            return;
         }
-        renderPDF(pdf);
-    });
-    $('button').click(function() {
-        $('button').removeClass('active');
-        $(this).addClass('active');
+        $('#pdf-content').hide();
     });
 </script>
 {% endblock %}
