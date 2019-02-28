@@ -14,17 +14,8 @@ Exercises
     <div class="content">
         <div class="row flex-grow-1">
             <div style="float: left" class="no-float">
-                <div class="btn-group-vertical">
-                    <!--TOOD: Generate from iterable data from Flask of exercises-->
-                    <button type="button" style="width: 300px" class="btn btn-primary active">
-                        <span style="text-align: center"></span>Level 1 - ii V I
-                    </button>
-                    <button type="button" class="btn btn-primary">
-                        Level 2 - ii V I
-                    </button>
-                    <button type="button" class="btn btn-primary">
-                        Level 3 - ii V I
-                    </button>
+                <div id='sheet-list' class="btn-group-vertical">
+                    <!--Generates from api call -->
                 </div>
             </div>
             <div style="float:center">
@@ -35,16 +26,54 @@ Exercises
     </div>
 </section>
 <script>
-    $('button').click(function() {
-        $('button').removeClass('active');
-        $(this).addClass('active');
-    });
+    // TODO: Put all this in an external file
+    function renderPDF(pdf) {
+        const options = {
+            pdfOpenParams: { view: 'FitV'}
+        };
+        PDFObject.embed(pdf,'#pdf-content', options);
+    }
 
-    // PDF URL, ideally from AWS or some cloud provider
-    const pdf = 'https://www.kungalv.se/siteassets/dokument/skola-barnomsorg/dokument/gymnasieskola/estetiska-programmet/ansokan/sang/fly-me-to-the-moon.pdf';
-    const options = {
-        pdfOpenParams: { view: 'FitV'}
-    };
-    PDFObject.embed(pdf,'#pdf-content', options);
+    // API returns data like:
+    // [
+    //   {
+    //     "name": "Ex1", 
+    //     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/public/pdf1.pdf"
+    //   }, 
+    //   {
+    //     "name": "Ex2", 
+    //     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/public/pdf2.pdf"
+    //   }
+    // ]
+    $.get("/api/exercises", (data) => {
+        if (data) {
+            $('#pdf-content').show();
+            let $songButton, $songText;
+            data.forEach((song, i) => {
+                console.log(data)
+                $songButton = $('<button>').addClass('btn btn-primary song-button');
+                $songText = $('<span>').addClass('song-span');
+                if (i === 0) {
+                    $songButton.addClass('active');
+                }
+                $songText.text(song.name);
+                $songButton.append($songText);
+                $songButton.attr('id', song.object_url);
+                $songButton.click((c) => {
+                    const url = c.currentTarget.id; // Seems hacky
+                    // TODO: Highlight currently selected button
+                    // $(this).removeClass('active');
+                    // $(`#${url}`).addClass('active');
+                    renderPDF(url);
+                });
+                $('#sheet-list').append($songButton);
+            });
+            pdf = data[0].object_url;
+            renderPDF(pdf);
+            return;
+        }
+        $('#pdf-content').hide();
+    });
+</script>
 </script>
 {% endblock %}

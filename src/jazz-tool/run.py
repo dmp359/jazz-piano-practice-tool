@@ -66,13 +66,6 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-# @app.route('/api/goats')
-# def api_goats():
-#     n = request.args.get('n', default=6)
-#     offset = request.args.get('offset', default=0)
-#     goats = get_db().get_goats(n, offset)
-#     return jsonify(goats)
-
 # Handle the index (home) page
 @app.route('/')
 def index():
@@ -119,6 +112,16 @@ def upload_file():
         return redirect('/sheets')
     else:
         return redirect('/sheets') # TODO: error json msg handling
+
+@app.route('/api/exercises', methods=['GET'])
+def get_exercises():
+    if 'user' not in session: # User is unauthenticated
+        return redirect('/login')
+
+    if request.method == 'GET':
+        print('get requested')
+        sheets = get_db().get_exercises()
+        return jsonify(sheets)
 
 # Handle any files that begin '/resources' by loading from the resources directory
 @app.route('/resources/<path:path>')

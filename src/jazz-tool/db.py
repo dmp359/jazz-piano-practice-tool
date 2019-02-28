@@ -22,6 +22,7 @@ class Database:
         self.conn.commit()
 
     # Schema modeled after http://www.sqlitetutorial.net/tryit/query/sqlite-primary-key/#3
+    # User sheet api endpoint
     def get_sheets(self, username, n=10, offset=0):
 
         # Grab n urls for that user
@@ -34,6 +35,19 @@ class Database:
                 'name': d[0][1],
                 'description': d[0][2],
             } for d in sheet_data]
+        else:
+            return None
+
+    # Exercises api endpoint
+    def get_exercises(self, n=10, offset=0):
+
+        # Grab n urls
+        data = self.select('SELECT * FROM exercises LIMIT ? OFFSET ?', [n, offset])
+        if data:
+            return [{
+                'object_url': d[0],
+                'name': d[1],
+            } for d in data]
         else:
             return None
 

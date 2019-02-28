@@ -23,3 +23,19 @@ CREATE TABLE user_sheets (
 	FOREIGN KEY (object_url) REFERENCES sheets (object_url) 
             ON DELETE CASCADE ON UPDATE NO ACTION
 );
+
+CREATE TABLE exercises (
+    object_url TEXT NOT NULL,
+    name TEXT NOT NULL,
+    PRIMARY KEY (object_url)
+);
+
+INSERT INTO exercises VALUES (
+    "https://s3.amazonaws.com/user-uploaded-pdfs/public_exercises/iivi.pdf",
+    "Shell Voicings - ii V I"
+);
+
+INSERT INTO exercises VALUES (
+    "https://s3.amazonaws.com/user-uploaded-pdfs/public_exercises/iivi2.pdf",
+    "Meaty Shell Voicings - ii V I"
+);
