@@ -346,6 +346,15 @@ function renderKeyButtons() {
     });
     $('#keys').append($keyButton);
   });
+
+  let $randomButton = $('<button>').addClass('btn btn-primary').text('Random').attr('id', 'random');
+  $randomButton.click(() => {
+    clearStaff();
+    renderLick(transposeLickByKey(lick, 
+      SUPPORTED_KEYS[Math.floor(Math.random() * SUPPORTED_KEYS.length)])
+    );
+  });
+  $('#keys').append($randomButton);
 }
 
 // Render lick in C on load
