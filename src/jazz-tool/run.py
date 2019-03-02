@@ -7,13 +7,19 @@ from passlib.hash import pbkdf2_sha256
 
 import boto3, botocore
 from db import Database
+import os, json, sys
 
+MAX_STORAGE_SPACE = 20000000 # 20 mb max per user
+
+# Only allow pdf upload
 ALLOWED_EXTENSIONS = set(['pdf'])
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-import os, json, sys
+def getFileSize(filename):
+    st = os.stat(filename)
+    return st.st_size
 
 app = Flask(__name__, static_folder='public', static_url_path='')
 app.config.from_object('config')
@@ -105,13 +111,27 @@ def upload_file():
     if file.filename == '':
         return 'Please select a file'
 
+    # Is a pdf file
     if file and allowed_file(file.filename):
-        file.filename = '{}/{}'.format(username, secure_filename(file.filename))
+
+        # Check how big the file is in bytes
+        file.seek(0, os.SEEK_END)
+        file_length = file.tell()
+        updated_storage = get_db().get_user(username)['storage_space'] + file_length
+        if (updated_storage >= MAX_STORAGE_SPACE):
+            return redirect('/sheets') # TODO: Send template error that file hit max
+            ## TODO: Consider making a loading bar of file storage
+
+        # File is valid to upload
+        # Save a reference to the name/description in the database
+        # And update the user's file size total
+        file.filename = '{}/{}'.format(username, secure_filename(file.filename)) # username/filename
         url = upload_file_to_s3(file, app.config['S3_BUCKET'])
         get_db().add_sheet_url(url, request.form['name'], request.form['description'], username)
+        get_db().update_user_size(username, updated_storage)
         return redirect('/sheets')
     else:
-        return redirect('/sheets') # TODO: error json msg handling
+        return redirect('/sheets') # TODO: Send template error that file must be a pdf
 
 @app.route('/api/exercises', methods=['GET'])
 def get_exercises():
@@ -138,7 +158,7 @@ def login():
         if username and typed_password:
             user = get_db().get_user(username)
             if user:
-                if pbkdf2_sha256.verify(typed_password, user['encrypted_password']):
+                if pbkdf2_sha256.verify(typed_password, user['encrypted_password']): # Decrypt pw
                     session['user'] = user
                     return redirect('/')
                 else:

@@ -52,7 +52,7 @@ class Database:
             return None
 
     def create_user(self, name, username, encrypted_password):
-        self.execute('INSERT INTO users (name, username, encrypted_password) VALUES (?, ?, ?)',
+        self.execute('INSERT INTO users (name, username, encrypted_password, storage_space) VALUES (?, ?, ?, 0)',
                      [name, username, encrypted_password])
 
     def user_exists(self, username):
@@ -65,7 +65,8 @@ class Database:
             return {
                 'name': d[0],
                 'username': d[1],
-                'encrypted_password': d[2]
+                'encrypted_password': d[2],
+                'storage_space': d[3],
             }
         else:
             return None
@@ -75,6 +76,11 @@ class Database:
                      [object_url, name, description])
         self.execute('INSERT INTO user_sheets (username, object_url) VALUES (?, ?)',
                      [username, object_url])
+        
 
+    def update_user_size(self, username, size):
+        # current_storage = self.select('SELECT storage_space FROM users WHERE username=?', [username])
+        self.execute('UPDATE users SET storage_space=? WHERE username=?', [updated_storage, username])
+    
     def close(self):
         self.conn.close()
