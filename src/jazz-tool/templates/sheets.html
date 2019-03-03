@@ -18,8 +18,8 @@ Sheets
         </div>
         {% endif %}
         <div class="dropdown-menu dropdown-menu-sm" id="context-menu">
-            <a class="dropdown-item" href="/sheets">Rename</a>
-            <a class="dropdown-item" href="/sheets">Delete</a>
+            <a class="dropdown-item" id="rename">Rename</a>
+            <a class="dropdown-item" id="delete">Delete</a>
          </div>
         <div class="row flex-grow-1">
             
@@ -95,6 +95,7 @@ Sheets
                     $songButton.addClass('active');
                 }
                 $songText.text(song.name);
+                console.log(song.name);
                 $songDescription.text(song.description);
                 $songButton.append($songText);
                 $songButton.append($songDescription);
@@ -114,13 +115,21 @@ Sheets
                         top: top,
                         left: left
                     }).addClass("show");
-                    
-                    return false; // blocks default browser right click menu
-                }).on("click", () => $("#context-menu").removeClass("show").hide());
 
-                $("#context-menu a").on("click", () => {
-                    $(this).parent().removeClass("show").hide();
+                    // Close dropdown on selecting of an option
+                    $("#context-menu a").on("click", () => {
+                        $.get('api/delete', { url: e.currentTarget.id });
+                        $(this).parent().removeClass("show").hide();
+                        location.reload(); // refresh to see change
+                    });
+
+                    // Close dropdown on click away
+                    $('.content').on("click", () => {
+                        $("#context-menu").removeClass("show").hide();
+                    });
+                    return false; // blocks default browser right click menu
                 });
+
                 $('#sheet-list').append($songButton);
             });
             pdf = data[0].object_url;

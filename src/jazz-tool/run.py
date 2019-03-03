@@ -36,10 +36,12 @@ s3 = boto3.client(
    aws_secret_access_key=app.config['S3_SECRET']
 )
 
-def upload_file_to_s3(file, bucket_name, acl='public-read'):
+def upload_file_to_s3(file, bucket_name, acl='public-read-write'):
 
     '''
     Docs: http://boto3.readthedocs.io/en/latest/guide/s3.html
+    and
+    https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3.html
     '''
 
     try:
@@ -58,6 +60,9 @@ def upload_file_to_s3(file, bucket_name, acl='public-read'):
         return e
 
     return '{}/{}'.format(app.config['S3_LOCATION'], file.filename)
+
+def delete_file_from_s3(key_name, bucket_name):
+    s3.delete_object(Bucket=bucket_name, Key=key_name)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -138,8 +143,8 @@ def upload_file():
         if not name:
             return render_template('sheets.html', message="Please enter a song name")
         
-        get_db().add_sheet(url, name, descr, file_length, username)
-        get_db().update_user_size(username, updated_storage)
+        get_db().add_sheet(url, file.filename, name, descr, file_length, username)
+        get_db().update_user_space(username, updated_storage)
         return redirect('/sheets')
     else:
         return render_template('sheets.html', message="Please upload only .pdf files")
@@ -150,9 +155,20 @@ def get_exercises():
         return redirect('/login')
 
     if request.method == 'GET':
-        print('get requested')
         sheets = get_db().get_exercises()
         return jsonify(sheets)
+
+@app.route('/api/delete', methods=['GET'])
+def delete_sheet():
+    if 'user' not in session: # User is unauthenticated. TODO: Move all duplicate calls to function
+        return redirect('/login')
+
+    username = session['user']['username']
+    object_url = request.args.get('url')
+    file_name = get_db().get_sheet_file_name(object_url)
+    get_db().remove_sheet_and_update_user(object_url, username)
+    delete_file_from_s3(file_name, app.config['S3_BUCKET'])
+    return ('', 204) # Redirect isn't working here, so a refresh is done on the client side
 
 # Handle any files that begin '/resources' by loading from the resources directory
 @app.route('/resources/<path:path>')

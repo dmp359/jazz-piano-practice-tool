@@ -11,6 +11,7 @@ CREATE TABLE users (
 
 CREATE TABLE sheets (
     object_url TEXT NOT NULL,
+    file_name TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     size REAL NOT NULL,

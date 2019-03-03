@@ -32,8 +32,8 @@ class Database:
             sheet_data = [self.select('SELECT * FROM sheets WHERE object_url=?', [d[0]]) for d in data]
             return [{
                 'object_url': d[0][0],
-                'name': d[0][1],
-                'description': d[0][2],
+                'name': d[0][2],
+                'description': d[0][3],
             } for d in sheet_data]
         else:
             return None
@@ -74,20 +74,27 @@ class Database:
         else:
             return None
 
-    def add_sheet(self, object_url, name, description, size, username):
-        self.execute('INSERT INTO sheets (object_url, name, description, size) VALUES (?, ?, ?, ?)',
-                     [object_url, name, description, size])
+    def add_sheet(self, object_url, file_name, name, description, size, username):
+        self.execute('INSERT INTO sheets (object_url, file_name, name, description, size) VALUES (?, ?, ?, ?, ?)',
+                     [object_url, file_name, name, description, size])
         self.execute('INSERT INTO user_sheets (username, object_url) VALUES (?, ?)',
                      [username, object_url])
-        
-    def update_user_size(self, username, size):
-        self.execute('UPDATE users SET used_space=? WHERE username=?', [size, username])
+    
+    def get_sheet_file_name(self, object_url):
+        return self.select('SELECT file_name FROM sheets WHERE object_url=?', [object_url])[0][0]
+
+    def update_user_space(self, username, space):
+        self.execute('UPDATE users SET used_space=? WHERE username=?', [space, username])
     
     def remove_sheet_and_update_user(self, object_url, username):
-        size = self.select('SELECT size FROM sheets WHERE object_url=?',[object_url])
-        user_storage = self.get_user(username)['used_space']
+        size = self.select('SELECT size FROM sheets WHERE object_url=?',[object_url])[0][0]
+        used_space = self.get_user(username)['used_space']
+        print(used_space)
         self.execute('DELETE FROM sheets WHERE object_url=?', [object_url])
-        self.update_user_size(user_storage - size)
+        self.execute('DELETE FROM user_sheets WHERE object_url=? and username=?', [object_url, username])
+        self.update_user_space(username, used_space - size) # Return the storage space
+        used_space = self.get_user(username)['used_space']
+        print(used_space)
 
     def close(self):
         self.conn.close()
