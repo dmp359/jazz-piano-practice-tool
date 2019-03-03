@@ -14,7 +14,7 @@ Exercises
     <div class="content">
         <div class="row flex-grow-1">
             <div style="float: left" class="no-float">
-                <div id='sheet-list' class="btn-group-vertical">
+                <div id='sheet-list' class="list-group">
                     <!--Generates from api call -->
                 </div>
             </div>
@@ -50,7 +50,7 @@ Exercises
             $('#pdf-content').show();
             let $songButton, $songText;
             data.forEach((song, i) => {
-                $songButton = $('<button>').addClass('btn btn-primary song-button');
+                $songButton = $('<button>').addClass('list-group-item list-group-item-action song-button');
                 $songText = $('<span>').addClass('song-span');
                 if (i === 0) {
                     $songButton.addClass('active');
@@ -73,6 +73,5 @@ Exercises
         }
         $('#pdf-content').hide();
     });
-</script>
 </script>
 {% endblock %}

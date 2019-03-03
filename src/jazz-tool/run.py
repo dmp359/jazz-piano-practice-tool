@@ -112,14 +112,15 @@ def upload_file():
         return 'Please select a file'
 
     # Is a pdf file
-    if file and allowed_file(file.filename):
+    if file and allowed_file(file.filename) and username:
 
         # Check how big the file is in bytes
         file.seek(0, os.SEEK_END)
         file_length = file.tell()
-        updated_storage = get_db().get_user(username)['storage_space'] + file_length
+        file.seek(0, 0)
+        updated_storage = get_db().get_user(username)['used_space'] + file_length
         if (updated_storage >= MAX_STORAGE_SPACE):
-            return redirect('/sheets') # TODO: Send template error that file hit max
+            return render_template('sheets.html', message="You have exceeded the maximum allowed storage")
             ## TODO: Consider making a loading bar of file storage
 
         # File is valid to upload
@@ -127,11 +128,21 @@ def upload_file():
         # And update the user's file size total
         file.filename = '{}/{}'.format(username, secure_filename(file.filename)) # username/filename
         url = upload_file_to_s3(file, app.config['S3_BUCKET'])
-        get_db().add_sheet_url(url, request.form['name'], request.form['description'], username)
+        if (get_db().sheet_exists(url)):
+            return render_template('sheets.html', message="File already uploaded")
+
+        name = request.form['name']
+        descr = request.form['description']
+
+        # In case the user can get passed client-side validation in the form
+        if not name:
+            return render_template('sheets.html', message="Please enter a song name")
+        
+        get_db().add_sheet(url, name, descr, file_length, username)
         get_db().update_user_size(username, updated_storage)
         return redirect('/sheets')
     else:
-        return redirect('/sheets') # TODO: Send template error that file must be a pdf
+        return render_template('sheets.html', message="Please upload only .pdf files")
 
 @app.route('/api/exercises', methods=['GET'])
 def get_exercises():

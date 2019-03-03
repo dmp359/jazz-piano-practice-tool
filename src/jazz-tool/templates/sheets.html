@@ -12,10 +12,19 @@ Sheets
 
 <section>
     <div class="content">
+        {% if message %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+        {% endif %}
+        <div class="dropdown-menu dropdown-menu-sm" id="context-menu">
+            <a class="dropdown-item" href="/sheets">Rename</a>
+            <a class="dropdown-item" href="/sheets">Delete</a>
+         </div>
         <div class="row flex-grow-1">
+            
             <div style="float: left" class="no-float">
-                <div id='sheet-list' class="btn-group-vertical">
-                    <!--Generates from api call -->
+                <div id='sheet-list' class="list-group">
                 </div>
             </div>
             <div style="float:center">
@@ -25,23 +34,25 @@ Sheets
                 </div>
             </div>
         </div>
+
         <form action="/api/sheets" method="POST" enctype="multipart/form-data">
             <div class="form-group row">
-                    <label for="example-text-input" class="col-2 col-form-label">Song Name</label>
-                    <div class="col-4">
-                        <input class="form-control" type="text" name="name">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="example-text-input" class="col-2 col-form-label">Song Style</label>
-                    <div class="col-4">
-                        <input class="form-control" type="text" name="description">
-                    </div>
+                <label class="btn btn-secondary btn-file" for="user_file">
+                        <input type="file" required name="user_file">
+                </label>
             </div>
-            <label class="btn btn-secondary btn-file" for="user_file">
-                <input type="file" name="user_file">
-            </label>
-            <br />
+            <div class="form-group row">
+                <label for="example-text-input" class="col-2 col-form-label">Song Name</label>
+                <div class="col-4">
+                    <input class="form-control" type="text" required name="name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="example-text-input" class="col-2 col-form-label">Song Style</label>
+                <div class="col-4">
+                    <input class="form-control" type="text" name="description">
+                </div>
+            </div>
             <button class="btn btn-primary" type="submit">Upload</button>
         </form>
     </div>
@@ -68,14 +79,16 @@ Sheets
 //     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/dan/pdf2.pdf"
 //   }
 // ]
-
     $.get("/api/sheets", (data) => {
         if (data) {
             $('#pdf-content').show();
             $('#instructions').hide();
             let $songButton, $songText, $songDescription;
+            // let $dropdown = $('<div>').addClass('dropdown-menu dropdown-menu-sm').attr('id', 'context-menu');
+            // let $dropdownOption = $('a').addClass('dropdown-item').attr('href', '#').text('Action');
+            // $dropdown.append($dropdownOption);
             data.forEach((song, i) => {
-                $songButton = $('<button>').addClass('btn btn-primary song-button');
+                $songButton = $('<button>').addClass('list-group-item list-group-item-action song-button');
                 $songText = $('<span>').addClass('song-span');
                 $songDescription = $('<span>').addClass('description-span');
                 if (i === 0) {
@@ -92,6 +105,21 @@ Sheets
                     // $(this).removeClass('active');
                     // $(`#${url}`).addClass('active');
                     renderPDF(url);
+                });
+                $songButton.on('contextmenu', e => {
+                    var top = e.pageY - 10;
+                    var left = e.pageX - 90;
+                    $("#context-menu").css({
+                        display: "block",
+                        top: top,
+                        left: left
+                    }).addClass("show");
+                    
+                    return false; // blocks default browser right click menu
+                }).on("click", () => $("#context-menu").removeClass("show").hide());
+
+                $("#context-menu a").on("click", () => {
+                    $(this).parent().removeClass("show").hide();
                 });
                 $('#sheet-list').append($songButton);
             });

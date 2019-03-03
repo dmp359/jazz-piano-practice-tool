@@ -52,12 +52,15 @@ class Database:
             return None
 
     def create_user(self, name, username, encrypted_password):
-        self.execute('INSERT INTO users (name, username, encrypted_password, storage_space) VALUES (?, ?, ?, 0)',
+        self.execute('INSERT INTO users (name, username, encrypted_password, used_space) VALUES (?, ?, ?, 0)',
                      [name, username, encrypted_password])
 
     def user_exists(self, username):
         return (self.select('SELECT COUNT(*) FROM users WHERE username=?', [username])[0][0] > 0)
 
+    def sheet_exists(self, object_url):
+        return (self.select('SELECT COUNT(*) FROM sheets WHERE object_url=?', [object_url])[0][0] > 0)
+ 
     def get_user(self, username):
         data = self.select('SELECT * FROM users WHERE username=?', [username])
         if data:
@@ -66,21 +69,25 @@ class Database:
                 'name': d[0],
                 'username': d[1],
                 'encrypted_password': d[2],
-                'storage_space': d[3],
+                'used_space': d[3],
             }
         else:
             return None
 
-    def add_sheet_url(self, object_url, name, description, username):
-        self.execute('INSERT INTO sheets (object_url, name, description) VALUES (?, ?, ?)',
-                     [object_url, name, description])
+    def add_sheet(self, object_url, name, description, size, username):
+        self.execute('INSERT INTO sheets (object_url, name, description, size) VALUES (?, ?, ?, ?)',
+                     [object_url, name, description, size])
         self.execute('INSERT INTO user_sheets (username, object_url) VALUES (?, ?)',
                      [username, object_url])
         
-
     def update_user_size(self, username, size):
-        # current_storage = self.select('SELECT storage_space FROM users WHERE username=?', [username])
-        self.execute('UPDATE users SET storage_space=? WHERE username=?', [updated_storage, username])
+        self.execute('UPDATE users SET used_space=? WHERE username=?', [size, username])
     
+    def remove_sheet_and_update_user(self, object_url, username):
+        size = self.select('SELECT size FROM sheets WHERE object_url=?',[object_url])
+        user_storage = self.get_user(username)['used_space']
+        self.execute('DELETE FROM sheets WHERE object_url=?', [object_url])
+        self.update_user_size(user_storage - size)
+
     def close(self):
         self.conn.close()

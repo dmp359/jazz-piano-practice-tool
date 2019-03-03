@@ -5,7 +5,7 @@ CREATE TABLE users (
     name TEXT NOT NULL,
     username TEXT NOT NULL,
     encrypted_password TEXT NOT NULL,
-    storage_space REAL NOT NULL,
+    used_space REAL NOT NULL,
     PRIMARY KEY (username)
 );
 
@@ -13,6 +13,7 @@ CREATE TABLE sheets (
     object_url TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
+    size REAL NOT NULL,
     PRIMARY KEY (object_url)
 );
 
