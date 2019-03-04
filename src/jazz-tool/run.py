@@ -7,9 +7,9 @@ from passlib.hash import pbkdf2_sha256
 
 import boto3, botocore
 from db import Database
-import os, json, sys
+import os, json, sys, datetime
 
-MAX_STORAGE_SPACE = 20000000 # 20 mb max per user
+MAX_STORAGE_SPACE = 20000000 # 20 mb max per user. TODO: store in db
 
 # Only allow pdf upload
 ALLOWED_EXTENSIONS = set(['pdf'])
@@ -23,9 +23,6 @@ def getFileSize(filename):
 
 app = Flask(__name__, static_folder='public', static_url_path='')
 app.config.from_object('config')
-
-# TODO: Replace with DB
-urls=[]
 
 '''
 S3 Uploading
@@ -80,7 +77,13 @@ def close_connection(exception):
 # Handle the index (home) page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    date = datetime.datetime.today().strftime("%m/%d/%Y") # I.e. 03/04/2019  
+    with open('licks.json') as json_file:  
+        licks = json.load(json_file)
+    data = licks['03/03/2019']
+    if (date in licks):
+        data = licks[date]
+    return render_template('index.html', data=data)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -108,7 +111,7 @@ def upload_file():
         sheets = get_db().get_sheets(username)
         return jsonify(sheets)
 
-    # (Else is a post attempting to upload a file)
+    # Else is a post attempting to upload a file
     if 'user_file' not in request.files:
         return 'Error - No user_file key in request.files'
  
