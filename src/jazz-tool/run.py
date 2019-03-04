@@ -93,7 +93,7 @@ def register():
                 return render_template('register.html', message='Username is already taken')
             encrypted_password = pbkdf2_sha256.encrypt(typed_password, rounds=200000, salt_size=16)
             get_db().create_user(name, username, encrypted_password)
-            return redirect('/login')
+            return render_template('login.html', success_message="Registration successful! Please login below.")
     return render_template('register.html')
 
 
@@ -207,7 +207,6 @@ def logout():
 # Handle any unhandled filename by loading its template.
 @app.route('/<name>')
 def generic(name):
-    # return render_template(name + '.html')
     if 'user' in session: # User is authenticated
         return render_template(name + '.html')
     else:

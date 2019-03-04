@@ -303,7 +303,6 @@ function renderLick(lick) {
       return n;
     });
 
-    console.log(notesForMeasure);
     // Automatic beaming
     var beams = VF.Beam.generateBeams(notesForMeasure);
     var voice = new Vex.Flow.Voice(Vex.Flow.TIME4_4);
