@@ -40,12 +40,13 @@ $.get("/api/sheets", (data) => {
             $songButton.append($songText);
             $songButton.append($songDescription);
             $songButton.attr('id', song.object_url);
-            $songButton.click((c) => {
-                const url = c.currentTarget.id; // Seems hacky
-                // TODO: Highlight currently selected button
-                // $(this).removeClass('active');
-                // $(`#${url}`).addClass('active');
-                renderPDF(url);
+            
+            // On click, highlight currently selected button and render pdf with id of button (url)
+            $songButton.click(c => {
+                $('button').removeClass('active');
+                const target = c.currentTarget;
+                $(target).addClass('active');
+                renderPDF(target.id);
             });
 
             // Right clicked

@@ -25,53 +25,5 @@ Exercises
         </div>
     </div>
 </section>
-<script>
-    // TODO: Put all this in an external file
-    function renderPDF(pdf) {
-        const options = {
-            pdfOpenParams: { view: 'FitV'}
-        };
-        PDFObject.embed(pdf,'#pdf-content', options);
-    }
-
-    // API returns data like:
-    // [
-    //   {
-    //     "name": "Ex1", 
-    //     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/public/pdf1.pdf"
-    //   }, 
-    //   {
-    //     "name": "Ex2", 
-    //     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/public/pdf2.pdf"
-    //   }
-    // ]
-    $.get("/api/exercises", (data) => {
-        if (data) {
-            $('#pdf-content').show();
-            let $songButton, $songText;
-            data.forEach((song, i) => {
-                $songButton = $('<button>').addClass('list-group-item list-group-item-action song-button');
-                $songText = $('<span>').addClass('song-span');
-                if (i === 0) {
-                    $songButton.addClass('active');
-                }
-                $songText.text(song.name);
-                $songButton.append($songText);
-                $songButton.attr('id', song.object_url);
-                $songButton.click((c) => {
-                    const url = c.currentTarget.id; // Seems hacky
-                    // TODO: Highlight currently selected button
-                    // $(this).removeClass('active');
-                    // $(`#${url}`).addClass('active');
-                    renderPDF(url);
-                });
-                $('#sheet-list').append($songButton);
-            });
-            pdf = data[0].object_url;
-            renderPDF(pdf);
-            return;
-        }
-        $('#pdf-content').hide();
-    });
-</script>
+<script src='/js/exercises-renderer.js'></script>
 {% endblock %}
