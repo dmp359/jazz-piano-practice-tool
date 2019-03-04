@@ -24,9 +24,6 @@ $.get("/api/sheets", (data) => {
         $('#pdf-content').show();
         $('#instructions').hide();
         let $songButton, $songText, $songDescription;
-        // let $dropdown = $('<div>').addClass('dropdown-menu dropdown-menu-sm').attr('id', 'context-menu');
-        // let $dropdownOption = $('a').addClass('dropdown-item').attr('href', '#').text('Action');
-        // $dropdown.append($dropdownOption);
         data.forEach((song, i) => {
             $songButton = $('<button>').addClass('list-group-item list-group-item-action song-button');
             $songText = $('<span>').addClass('song-span');
@@ -57,7 +54,9 @@ $.get("/api/sheets", (data) => {
                     top: top,
                     left: left
                 }).addClass("show");
+
                 const song_url = e.currentTarget.id;
+                
                 // Handle clicking of delete option
                 $("#context-menu #delete").on("click", () => {
                     $.get('api/delete', { url: song_url });

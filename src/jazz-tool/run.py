@@ -135,10 +135,9 @@ def upload_file():
         # Save a reference to the name/description in the database
         # And update the user's file size total
         file.filename = '{}/{}'.format(username, secure_filename(file.filename)) # username/filename
-        url = upload_file_to_s3(file, app.config['S3_BUCKET'])
-        if (get_db().sheet_exists(url)):
+        if (get_db().sheet_exists(file.filename)):
             return render_template('sheets.html', message="File already uploaded")
-
+        url = upload_file_to_s3(file, app.config['S3_BUCKET'])
         name = request.form['name']
         descr = request.form['description']
 

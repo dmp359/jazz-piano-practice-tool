@@ -58,8 +58,8 @@ class Database:
     def user_exists(self, username):
         return (self.select('SELECT COUNT(*) FROM users WHERE username=?', [username])[0][0] > 0)
 
-    def sheet_exists(self, object_url):
-        return (self.select('SELECT COUNT(*) FROM sheets WHERE object_url=?', [object_url])[0][0] > 0)
+    def sheet_exists(self, file_name):
+        return (self.select('SELECT COUNT(*) FROM sheets WHERE file_name=?', [file_name])[0][0] > 0)
  
     def get_user(self, username):
         data = self.select('SELECT * FROM users WHERE username=?', [username])
