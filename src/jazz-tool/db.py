@@ -83,18 +83,18 @@ class Database:
     def get_sheet_file_name(self, object_url):
         return self.select('SELECT file_name FROM sheets WHERE object_url=?', [object_url])[0][0]
 
+    def rename_sheet(self, object_url, newName, newDescription):
+        self.execute('UPDATE sheets SET name=?, description=? WHERE object_url=?', [newName, newDescription, object_url])
+
     def update_user_space(self, username, space):
         self.execute('UPDATE users SET used_space=? WHERE username=?', [space, username])
     
     def remove_sheet_and_update_user(self, object_url, username):
         size = self.select('SELECT size FROM sheets WHERE object_url=?',[object_url])[0][0]
         used_space = self.get_user(username)['used_space']
-        print(used_space)
         self.execute('DELETE FROM sheets WHERE object_url=?', [object_url])
         self.execute('DELETE FROM user_sheets WHERE object_url=? and username=?', [object_url, username])
         self.update_user_space(username, used_space - size) # Return the storage space
-        used_space = self.get_user(username)['used_space']
-        print(used_space)
 
     def close(self):
         self.conn.close()

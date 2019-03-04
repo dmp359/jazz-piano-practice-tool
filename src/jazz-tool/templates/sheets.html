@@ -17,12 +17,47 @@ Sheets
             {{ message }}
         </div>
         {% endif %}
+        <!--Only appears when right click of a song-->
         <div class="dropdown-menu dropdown-menu-sm" id="context-menu">
             <a class="dropdown-item" id="rename">Rename</a>
             <a class="dropdown-item" id="delete">Delete</a>
          </div>
+
+         <!--Only appears on rename-->
+         <form action="/api/rename" method="POST" enctype="multipart/form-data">
+            <div class="modal fade" id="modalRename" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header text-center">
+                            <h4 class="modal-title w-100 font-weight-bold">Rename</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body mx-3">
+                            <div class="md-form mb-5">
+                                <i class="fas fa-envelope prefix"></i>
+                                <label required for="newName">Song Name</label>
+                                <input type="text" id="songField" name="name" class="form-control validate">
+                            </div>
+                    
+                            <div class="md-form mb-4">
+                                <i class="fas fa-lock prefix"></i>
+                                <label for="newDesc">Song Style</label>
+                                <input type="text" id="descField" name="description" class="form-control validate">
+                            </div>
+                        </div>
+                        <input type="hidden" id="songUrl" name="url" value="" />
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </form>
+         
+
         <div class="row flex-grow-1">
-            
             <div style="float: left" class="no-float">
                 <div id='sheet-list' class="list-group">
                 </div>
@@ -57,8 +92,5 @@ Sheets
         </form>
     </div>
 </section>
-<script src='/js/sheets-renderer.js'>
-    // TODO: Put all this in an external file
-   
-</script>
+<script src='/js/sheets-renderer.js'></script>
 {% endblock %}

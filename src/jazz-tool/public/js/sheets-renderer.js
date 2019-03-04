@@ -35,7 +35,6 @@ $.get("/api/sheets", (data) => {
                 $songButton.addClass('active');
             }
             $songText.text(song.name);
-            console.log(song.name);
             $songDescription.text(song.description);
             $songButton.append($songText);
             $songButton.append($songDescription);
@@ -58,25 +57,19 @@ $.get("/api/sheets", (data) => {
                     top: top,
                     left: left
                 }).addClass("show");
-
+                const song_url = e.currentTarget.id;
                 // Handle clicking of delete option
                 $("#context-menu #delete").on("click", () => {
-                    $.get('api/delete', { url: e.currentTarget.id });
-                    // TODO: Add modal
+                    $.get('api/delete', { url: song_url });
+                    // TODO: Add modal saying "are you sure"
                     $(this).parent().removeClass("show").hide(); 
                     location.reload(); // refresh to see change
                 });
 
-                // Handle clicking of delete option
+                // Handle clicking of rename option
                 $("#context-menu #rename").on("click", () => {
-                    // TODO: Modal to get new song name and description
-                    $.get('api/rename', 
-                    { 
-                        url: e.currentTarget.id,
-                        name: newName,
-                        description: newDesc
-                    });
-                    location.reload(); // refresh to see change
+                    $('#modalRename').modal('show');
+                    $('#songUrl').val(song_url);
                 });
 
                 // Close dropdown on click away
