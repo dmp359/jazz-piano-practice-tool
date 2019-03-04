@@ -135,10 +135,9 @@ def upload_file():
         # Save a reference to the name/description in the database
         # And update the user's file size total
         file.filename = '{}/{}'.format(username, secure_filename(file.filename)) # username/filename
-        url = upload_file_to_s3(file, app.config['S3_BUCKET'])
-        if (get_db().sheet_exists(url)):
+        if (get_db().sheet_exists(file.filename)):
             return render_template('sheets.html', message="File already uploaded")
-
+        url = upload_file_to_s3(file, app.config['S3_BUCKET'])
         name = request.form['name']
         descr = request.form['description']
 
@@ -161,6 +160,23 @@ def get_exercises():
         sheets = get_db().get_exercises()
         return jsonify(sheets)
 
+
+@app.route('/api/rename', methods=['POST'])
+def rename_sheet():
+    if 'user' not in session: # User is unauthenticated. TODO: Move all duplicate calls to function
+        return redirect('/login')
+    username = session['user']['username']
+    name = request.form['name']
+    descr = request.form['description']
+    url = request.form['url'] # (Hidden in form)
+
+    # In case the user can get passed client-side validation in the form
+    if not name:
+        return render_template('sheets.html', message="Please enter a song name")
+    
+    get_db().rename_sheet(url, name, descr)
+    return redirect('/sheets')
+    
 @app.route('/api/delete', methods=['GET'])
 def delete_sheet():
     if 'user' not in session: # User is unauthenticated. TODO: Move all duplicate calls to function
