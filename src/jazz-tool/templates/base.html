@@ -60,7 +60,7 @@ CS530: DUI, Project -->
                                     </div>
                                 </li>
                                 {% else %}
-                                <li class="nav-item">
+                                <li class="nav-item{% if active == 'LogIn' %} active{% endif %}">
                                     <a class="nav-link" href="/login">Log In</a>
                                 </li>
                                 {% endif %}

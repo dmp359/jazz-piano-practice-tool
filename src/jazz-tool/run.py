@@ -78,6 +78,8 @@ def close_connection(exception):
 @app.route('/')
 def index():
     date = datetime.datetime.today().strftime("%m/%d/%Y") # I.e. 03/04/2019  
+
+    # Note: Must start server in this directory
     with open('licks.json') as json_file:  
         licks = json.load(json_file)
     data = licks['03/03/2019']
@@ -128,7 +130,7 @@ def upload_file():
         file.seek(0, 0)
         updated_storage = get_db().get_user(username)['used_space'] + file_length
         if (updated_storage >= MAX_STORAGE_SPACE):
-            return render_template('sheets.html', message="You have exceeded the maximum allowed storage")
+            return render_template('sheets.html', message="Upload failed. You have exceeded the maximum allowed storage")
             ## TODO: Consider making a loading bar of file storage
 
         # File is valid to upload
@@ -136,14 +138,14 @@ def upload_file():
         # And update the user's file size total
         file.filename = '{}/{}'.format(username, secure_filename(file.filename)) # username/filename
         if (get_db().sheet_exists(file.filename)):
-            return render_template('sheets.html', message="File already uploaded")
+            return render_template('sheets.html', message="Upload failed. This file is already uploaded")
         url = upload_file_to_s3(file, app.config['S3_BUCKET'])
         name = request.form['name']
         descr = request.form['description']
 
         # In case the user can get passed client-side validation in the form
         if not name:
-            return render_template('sheets.html', message="Please enter a song name")
+            return render_template('sheets.html', message="Upload failed. The song name cannot be blank")
         
         get_db().add_sheet(url, file.filename, name, descr, file_length, username)
         get_db().update_user_space(username, updated_storage)
