@@ -74,12 +74,12 @@ $.get("/api/sheets", (data) => {
                     $('#modalRename').modal('show');
                     $('#songUrl').val(song_url);
                 });
+
+                // Handle clicking of fullscreen option
                 $("#context-menu #fullscreen").on("click", () => {
                     const win = window.open(song_url, '_blank');
                     win.focus();
                 });
-                // $fullScreenButton = $('<a>').attr('href', song.object_url).attr('target', '_blank').text('hiiiii');
-                // $('#pdf-content').append($fullScreenButton)
 
                 // Close dropdown on click away
                 $('.content').on("click", () => {

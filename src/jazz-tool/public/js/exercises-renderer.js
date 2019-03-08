@@ -37,6 +37,30 @@ $.get("/api/exercises", (data) => {
                 $(target).addClass('active');
                 renderPDF(target.id);
             });
+
+            // Right clicked
+            $songButton.on('contextmenu', e => {
+                var top = e.pageY - 10;
+                var left = e.pageX - 90;
+                $("#context-menu").css({
+                    display: "block",
+                    top: top,
+                    left: left
+                }).addClass("show");
+                const song_url = e.currentTarget.id;
+                
+                // Handle clicking of fullscreen option
+                $("#context-menu #fullscreen").on("click", () => {
+                    const win = window.open(song_url, '_blank');
+                    win.focus();
+                });
+
+                // Close dropdown on click away
+                $('.content').on("click", () => {
+                    $("#context-menu").removeClass("show").hide();
+                });
+                return false; // blocks default browser right click menu
+            });
             $('#sheet-list').append($songButton);
         });
         pdf = data[0].object_url;
