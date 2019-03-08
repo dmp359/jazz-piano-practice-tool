@@ -1,7 +1,7 @@
 # Dan Perlman, dmp359@drexel.edu
 # CS530: DUI, Project
 
-from flask import Flask, render_template, send_file, g, session, request, redirect, jsonify
+from flask import Flask, render_template, send_file, g, session, request, redirect, jsonify, url_for
 from werkzeug.utils import secure_filename
 from passlib.hash import pbkdf2_sha256
 
@@ -9,10 +9,12 @@ import boto3, botocore
 from db import Database
 import os, json, sys, datetime
 
-MAX_STORAGE_SPACE = 20000000 # 20 mb max per user. TODO: store in db
 
-# Only allow pdf upload
+'''Globals'''
+MAX_STORAGE_SPACE = 20000000 # 20 mb max per user.
 ALLOWED_EXTENSIONS = set(['pdf'])
+MAX_NUM_FILES_PER_USER = 1
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -130,7 +132,7 @@ def upload_file():
         file.seek(0, 0)
         updated_storage = get_db().get_user(username)['used_space'] + file_length
         if (updated_storage >= MAX_STORAGE_SPACE):
-            return render_template('sheets.html', message="Upload failed. You have exceeded the maximum allowed storage")
+            return redirect(url_for('generic', name="sheets", message="Upload failed. You have exceeded the maximum allowed storage"))
             ## TODO: Consider making a loading bar of file storage
 
         # File is valid to upload
@@ -138,7 +140,13 @@ def upload_file():
         # And update the user's file size total
         file.filename = '{}/{}'.format(username, secure_filename(file.filename)) # username/filename
         if (get_db().sheet_exists(file.filename)):
-            return render_template('sheets.html', message="Upload failed. This file is already uploaded")
+            return redirect(url_for('generic', name="sheets", message="Upload failed. This file is already uploaded"))
+
+        # Cap system at n files. Ideally this should eventually be removed
+        if (get_db().get_number_of_sheets(username) >= MAX_NUM_FILES_PER_USER):
+            return redirect(url_for('generic', name="sheets", 
+                message="Upload failed. You may only upload {0} files".format(MAX_NUM_FILES_PER_USER)))
+
         url = upload_file_to_s3(file, app.config['S3_BUCKET'])
         name = request.form['name']
         descr = request.form['description']
@@ -182,15 +190,17 @@ def rename_sheet():
     
 @app.route('/api/delete', methods=['GET'])
 def delete_sheet():
-    if 'user' not in session: # User is unauthenticated. TODO: Move all duplicate calls to function
+    if 'user' not in session: # User is unauthenticated
         return redirect('/login')
 
     username = session['user']['username']
     object_url = request.args.get('url')
+    print(object_url)
     file_name = get_db().get_sheet_file_name(object_url)
     get_db().remove_sheet_and_update_user(object_url, username)
     delete_file_from_s3(file_name, app.config['S3_BUCKET'])
-    return ('', 204) # Redirect isn't working here, so a refresh is done on the client side
+    # return ('', 204) # Redirect isn't working here, so a refresh is done on the client side
+    return redirect('/sheets')
 
 # Handle any files that begin '/resources' by loading from the resources directory
 @app.route('/resources/<path:path>')
@@ -229,9 +239,11 @@ def logout():
 # Handle any unhandled filename by loading its template.
 @app.route('/<name>')
 def generic(name):
-    print(name)
     if 'user' in session: # User is authenticated
-        return render_template(name + '.html')
+        message = request.args.get('message')
+        if message is None:
+            return render_template(name + '.html')
+        return render_template(name + '.html', message=message)
     else:
         return redirect('/login')
 
