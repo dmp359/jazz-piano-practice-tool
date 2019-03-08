@@ -84,11 +84,7 @@ for rent.html
     float: right;
 }
 
-#delete {
-    cursor: pointer;
-}
-
-#rename {
+.dropdown-item {
     cursor: pointer;
 }
 

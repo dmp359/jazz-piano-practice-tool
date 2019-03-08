@@ -28,6 +28,7 @@ $.get("/api/sheets", (data) => {
             $songButton = $('<button>').addClass('list-group-item list-group-item-action song-button');
             $songText = $('<span>').addClass('song-span');
             $songDescription = $('<span>').addClass('description-span');
+
             if (i === 0) {
                 $songButton.addClass('active');
             }
@@ -60,9 +61,12 @@ $.get("/api/sheets", (data) => {
                 // Handle clicking of delete option
                 $("#context-menu #delete").on("click", () => {
                     $.get('api/delete', { url: song_url });
-                    // TODO: Add modal saying "are you sure"
-                    $(this).parent().removeClass("show").hide(); 
-                    location.reload(); // refresh to see change
+                    bootbox.confirm("Are you sure you would like to delete this sheet?", (result) => { 
+                        if (result) {
+                            $(this).parent().removeClass("show").hide(); 
+                            location.reload(); // refresh to see change
+                        }
+                    });
                 });
 
                 // Handle clicking of rename option
@@ -70,6 +74,12 @@ $.get("/api/sheets", (data) => {
                     $('#modalRename').modal('show');
                     $('#songUrl').val(song_url);
                 });
+                $("#context-menu #fullscreen").on("click", () => {
+                    const win = window.open(song_url, '_blank');
+                    win.focus();
+                });
+                // $fullScreenButton = $('<a>').attr('href', song.object_url).attr('target', '_blank').text('hiiiii');
+                // $('#pdf-content').append($fullScreenButton)
 
                 // Close dropdown on click away
                 $('.content').on("click", () => {
