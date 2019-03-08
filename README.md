@@ -1,4 +1,4 @@
-# jazz-piano-practice-tool
+# Jazz Piano Practice Tool
 ### A web app for those interested in practicing jazz piano! 
 #### COM 530 - Developing User Interfaces
 
