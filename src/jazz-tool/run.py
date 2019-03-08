@@ -105,7 +105,7 @@ def register():
 # http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
 @app.route('/api/sheets', methods=['POST', 'GET'])
 def upload_file():
-    if 'user' not in session: # User is unauthenticated
+    if 'user' not in session:
         return redirect('/login')
 
     username = session['user']['username']
@@ -155,7 +155,7 @@ def upload_file():
 
 @app.route('/api/exercises', methods=['GET'])
 def get_exercises():
-    if 'user' not in session: # User is unauthenticated
+    if 'user' not in session:
         return redirect('/login')
 
     if request.method == 'GET':
@@ -165,8 +165,9 @@ def get_exercises():
 
 @app.route('/api/rename', methods=['POST'])
 def rename_sheet():
-    if 'user' not in session: # User is unauthenticated. TODO: Move all duplicate calls to function
+    if 'user' not in session:
         return redirect('/login')
+
     username = session['user']['username']
     name = request.form['name']
     descr = request.form['description']
@@ -228,6 +229,7 @@ def logout():
 # Handle any unhandled filename by loading its template.
 @app.route('/<name>')
 def generic(name):
+    print(name)
     if 'user' in session: # User is authenticated
         return render_template(name + '.html')
     else:
