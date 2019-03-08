@@ -2,9 +2,6 @@ const sharp = '#';
 const flat = 'B';
 const natural = 'n';
 
-// Chromatic up
-
-
 // https://groups.google.com/forum/#!topic/vexflow/gQ7Zw97Zl6k
 VF = Vex.Flow;
 
@@ -206,6 +203,7 @@ function transposeLickByKey(lick, toKey) {
 function renderLick(lick) {
   const length = 300;
   let offsetX = 0;
+  const offsetY = 20;
   let n;
 
   const width = 1000;
@@ -217,7 +215,7 @@ function renderLick(lick) {
   lick.forEach((measure, i) => {
 
     // Instantiate stave (measure)
-    var staveMeasure = new Vex.Flow.Stave(offsetX, 0, length);
+    var staveMeasure = new Vex.Flow.Stave(offsetX, offsetY, length);
 
     // Draw clef and time signature on first measure
     if (i == 0) {

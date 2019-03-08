@@ -55,8 +55,7 @@
             { "keys": ["e/4"], "duration": "8" },
             { "keys": ["d/4"], "duration": "8" },
             { "keys": ["c/4"], "duration": "8" },
-            { "keys": ["b/3"], "duration": "8" },
-            { "keys": ["d/4"], "duration": "8" }
+            { "keys": ["b/3"], "duration": "q" }
         ]
     ]
 }

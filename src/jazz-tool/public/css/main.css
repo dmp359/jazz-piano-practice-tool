@@ -11,21 +11,6 @@ header {
     background: #5258e3;
 }
 
-/* 
-TODO: Override button color to match styling
-.btn {
-    background: #333333;
-    border-color: #333333;
-    color: #fff;
-} */
-
-
-/* .btn:hover {
-    background: #5258e3;
-    border-color: #000000;
-    color: #fff;
-} */
-
 .navbar-expand-md .navbar-nav .nav-link {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -49,23 +34,12 @@ TODO: Override button color to match styling
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-/* for bikes.html
-td img {
-    max-width: 100px;
-}
-
-for rent.html
-.unavailable {
-    opacity: 0.25;
-} */
-
 .col-md-3 {
     padding-left: 0px;
 }
 .btn-primary:not(:disabled):not(.disabled).active:focus {
     box-shadow: none;
 }
-
 
 #pdf-content {
     height: 650px;
