@@ -13,7 +13,7 @@ import os, json, sys, datetime
 '''Globals'''
 MAX_STORAGE_SPACE = 20000000 # 20 mb max per user.
 ALLOWED_EXTENSIONS = set(['pdf'])
-MAX_NUM_FILES_PER_USER = 1
+MAX_NUM_FILES_PER_USER = 10
 
 def allowed_file(filename):
     return '.' in filename and \
