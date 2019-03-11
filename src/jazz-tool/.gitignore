@@ -24,4 +24,4 @@ var/
 *.egg
 
 # VSCode
-.vscode/
+.vscode/*
