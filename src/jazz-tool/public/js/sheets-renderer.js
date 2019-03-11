@@ -6,6 +6,20 @@ function renderPDF(pdf) {
 }
 
 // API returns data like:
+// {
+//   "used": 123456, 
+//   "total": "20000000"
+// }
+$.get('/api/storage', (data) => {
+
+    // Update progress bar width
+    if (data) {
+        percentage = data.used / data.total * 100;
+        $('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage);    
+    }
+});
+
+// API returns data like:
 // [
 //   {
 //     "description": "Description1", 
@@ -18,12 +32,12 @@ function renderPDF(pdf) {
 //     "object_url": "https://s3.amazonaws.com/user-uploaded-pdfs/dan/pdf2.pdf"
 //   }
 // ]
-
-$.get("/api/sheets", (data) => {
+$.get('/api/sheets', (data) => {
     if (data) {
         $('#pdf-content').show();
         $('#instructions').hide();
         let $songButton, $songText, $songDescription;
+
         data.forEach((song, i) => {
             $songButton = $('<button>').addClass('list-group-item list-group-item-action song-button');
             $songText = $('<span>').addClass('song-span');

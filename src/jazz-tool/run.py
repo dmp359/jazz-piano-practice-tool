@@ -103,6 +103,15 @@ def register():
             return render_template('login.html', success_message="Registration successful! Please login below.")
     return render_template('register.html')
 
+@app.route('/api/storage', methods=['GET'])
+def get_user_storage():
+    if 'user' not in session:
+        return redirect('/login')
+
+    username = session['user']['username']
+    if request.method == 'GET':
+        space = get_db().get_user_space(username)
+        return jsonify({ 'used': space, 'total': MAX_STORAGE_SPACE })
 
 # http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
 @app.route('/api/sheets', methods=['POST', 'GET'])

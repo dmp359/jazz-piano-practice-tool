@@ -91,10 +91,13 @@ class Database:
 
     def update_user_space(self, username, space):
         self.execute('UPDATE users SET used_space=? WHERE username=?', [space, username])
-    
+        
+    def get_user_space(self, username):
+        return self.get_user(username)['used_space']
+
     def remove_sheet_and_update_user(self, object_url, username):
         size = self.select('SELECT size FROM sheets WHERE object_url=?',[object_url])[0][0]
-        used_space = self.get_user(username)['used_space']
+        used_space = self.get_user_space(username)
         self.execute('DELETE FROM sheets WHERE object_url=?', [object_url])
         self.execute('DELETE FROM user_sheets WHERE object_url=? and username=?', [object_url, username])
         self.update_user_space(username, used_space - size) # Return the storage space

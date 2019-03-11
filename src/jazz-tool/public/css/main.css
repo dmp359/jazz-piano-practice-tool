@@ -70,3 +70,6 @@ header {
     height: 20px;
   }
   
+.progress-bar {
+    background-color: #5258e3;
+}
